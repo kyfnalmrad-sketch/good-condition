@@ -16,12 +16,13 @@ type Company = {
   nameEn: string;
   short: string;
   template?: string;
+  paperPath?: string;
   activityAr: string;
   activityEn: string;
 };
 
 export const COMPANIES: Company[] = [
-  { id: "astar", nameAr: "شركة أستار غاز يمن", nameEn: "Aster Gas Yemen Company", short: "ASTAR", activityAr: "حلول الغاز والطاقة والخدمات المرتبطة بها", activityEn: "gas, energy, and related technical services" },
+  { id: "astar", nameAr: "شركة أستار غاز يمن", nameEn: "Aster Gas Yemen Company", short: "ASTAR", paperPath: "/assets/official-work-letter/astar/official-paper.png", activityAr: "حلول الغاز والطاقة والخدمات المرتبطة بها", activityEn: "gas, energy, and related technical services" },
   { id: "master", nameAr: "شركة ماستر بلاتينيوم لاستيراد الأجهزة والمستلزمات الطبية والإلكترونية", nameEn: "Master Platinum for Importing Medical and Electronic Equipment and Supplies", short: "MASTER", activityAr: "استيراد الأجهزة والمستلزمات الطبية والإلكترونية", activityEn: "the import of medical and electronic equipment and supplies" },
   { id: "horizon-sanaa", nameAr: "شركة أفق صنعاء للحلول الذكية", nameEn: "Horizon Sana'a Smart Solutions", short: "HORIZON", template: "horizon-sanaa", activityAr: "الحلول الذكية والتقنية والتحول الرقمي", activityEn: "smart solutions, technology, and digital transformation" },
   { id: "yemen-colors-travel", nameAr: "شركة ألوان اليمن للسياحة والسفر", nameEn: "Yemen Colors Travel and Tourism Co.", short: "COLORS", template: "yemen-colors-travel", activityAr: "السياحة والسفر وتنظيم الرحلات", activityEn: "travel, tourism, and trip organization" },
@@ -118,7 +119,7 @@ function brandColor(companyId: string) { return ({ astar: "8b3f35", master: "173
 function barcodeSvg(data: WorkLetterData, companyId: string) { const payload = [`${data.reference}`, `${data.internalNo}`, `${data.issueDate}`].join("\n"); try { return bwipjs.toSVG({ bcid: "pdf417", text: payload, barcolor: brandColor(companyId), scale: 1, columns: 6, rows: 4, includetext: false, paddingwidth: 1, paddingheight: 1 } as any); } catch { return ""; } }
 
 export function LetterPreview({ data, language, format = 1 }: { data: WorkLetterData; language: Language; format?: LetterFormat }) {
-  const company = companyFor(data.companyId); const issuerName = data.issuerName || (language === "ar" ? "أحمد محمد، مدير الموارد البشرية" : "Ahmed Mohammed, Human Resources Manager"); const qr = codePayload(data, language); const barcode = useMemo(() => barcodeSvg(data, company.id), [data, company.id]); const english = language === "en"; const paperAsset = company.template ? `/assets/official-work-letter/templates/${company.template}.png` : `/assets/official-work-letter/${company.id}-official-paper.png`;
+  const company = companyFor(data.companyId); const issuerName = data.issuerName || (language === "ar" ? "أحمد محمد، مدير الموارد البشرية" : "Ahmed Mohammed, Human Resources Manager"); const qr = codePayload(data, language); const barcode = useMemo(() => barcodeSvg(data, company.id), [data, company.id]); const english = language === "en"; const paperAsset = company.paperPath ?? (company.template ? `/assets/official-work-letter/templates/${company.template}.png` : `/assets/official-work-letter/${company.id}-official-paper.png`);
   const optionalArabic = <>{data.passportNo ? <> ورقم الجواز <strong>{data.passportNo}</strong></> : null}{data.identityNo ? <> ورقم الهوية <strong>{data.identityNo}</strong></> : null}</>;
   const optionalEnglish = <>{data.passportNo ? <>; passport number: <strong>{data.passportNo}</strong></> : null}{data.identityNo ? <>; identity number: <strong>{data.identityNo}</strong></> : null}</>;
   const formatTwo = english && format === 2;

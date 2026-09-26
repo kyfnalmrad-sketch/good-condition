@@ -3031,6 +3031,11 @@
 .company-horizon-sanaa .letter-signature { top: 490px; bottom: auto; }
 .company-astar .letter-barcode,
 .company-horizon-sanaa .letter-barcode { top: 570px; bottom: auto; }
+.company-astar .official-letter-content { top: 220px; }
+.company-astar .letter-main { padding-top: 12px; }
+.company-astar .letter-main h1 { margin-top: 10px; margin-bottom: 30px; }
+.company-astar .letter-signature { top: 625px; }
+.company-astar .letter-barcode { top: 710px; }
 @media print {
   .company-astar .letter-copy,
   .company-horizon-sanaa .letter-copy { font-size: 17px !important; line-height: 1.88 !important; }
@@ -3042,6 +3047,9 @@
   .company-horizon-sanaa .letter-signature { top: 490px !important; bottom: auto !important; gap: 8px !important; }
   .company-astar .letter-barcode,
   .company-horizon-sanaa .letter-barcode { top: 570px !important; bottom: auto !important; }
+  .work-letter-paper.is-official-paper.company-astar .official-letter-content { top: 48mm !important; }
+  .work-letter-paper.is-official-paper.company-astar .letter-signature { top: 625px !important; }
+  .work-letter-paper.is-official-paper.company-astar .letter-barcode { top: 710px !important; }
 }
 
 @media print {
