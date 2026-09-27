@@ -2494,6 +2494,7 @@
 .document .doc-watermark-wrap {
   top: 92mm;
 }
+/* Watermark color must remain untouched: alpha transparency only, no filters or blending. */
 .document .doc-watermark {
   width: 24mm;
   height: 36mm;
