@@ -3103,3 +3103,17 @@
   .work-letter-paper.is-official-paper.company-arkan-finance .letter-signature,
   .work-letter-paper.is-official-paper.company-hayat-education .letter-signature { bottom: -25px !important; }
 }
+
+
+/* Astar print-safe spacing: keep administrative metadata below the modern header. */
+.work-letter-paper.is-official-paper.company-astar .official-letter-content { top: 285px; }
+.work-letter-paper.is-official-paper.company-astar .letter-closing { margin-top: 32px; }
+.work-letter-paper.is-official-paper.company-astar .letter-signature { top: 560px; right: 42px; bottom: auto; transform: none; }
+.work-letter-paper.is-official-paper.company-astar .letter-barcode { top: 660px; bottom: auto; }
+@media print {
+  .work-letter-paper.is-official-paper.company-astar .official-letter-content { top: 60mm !important; transform: none !important; }
+  .work-letter-paper.is-official-paper.company-astar .letter-closing { margin-top: 32px !important; }
+  .work-letter-paper.is-official-paper.company-astar .letter-signature { top: 560px !important; right: 12mm !important; left: auto !important; bottom: auto !important; transform: none !important; }
+  .work-letter-paper.is-official-paper.company-astar.is-english .letter-signature { right: auto !important; left: 12mm !important; }
+  .work-letter-paper.is-official-paper.company-astar .letter-barcode { top: 660px !important; bottom: auto !important; }
+}
