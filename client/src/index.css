@@ -3118,3 +3118,19 @@
   .work-letter-paper.is-official-paper.company-astar.is-english .letter-signature { right: auto !important; left: 12mm !important; }
   .work-letter-paper.is-official-paper.company-astar .letter-barcode { top: 660px !important; bottom: auto !important; }
 }
+
+/* Master-specific typography and rhythm: retain Arabic Naskh; use a cleaner corporate English face. */
+.company-master.is-arabic { font-family: "Noto Naskh Arabic", "Amiri", "Traditional Arabic", serif; }
+.company-master.is-arabic .letter-main h1 { font-size: 31px; }
+.company-master.is-arabic .letter-copy { line-height: 1.9; }
+.company-master.is-arabic .letter-closing { font-size: 19px; line-height: 1.8; }
+.company-master.is-english { font-family: Arial, Helvetica, sans-serif; }
+.company-master.is-english .letter-main h1 { font-family: Arial, Helvetica, sans-serif; font-size: 29px; }
+.company-master.is-english .letter-copy { font-family: Arial, Helvetica, sans-serif; font-size: 17px !important; line-height: 1.9; }
+.company-master.is-english .letter-closing { font-family: Arial, Helvetica, sans-serif; font-size: 16px; transform: translateY(-14px); }
+.company-master.is-english .letter-signature { font-family: Arial, Helvetica, sans-serif; }
+@media print {
+  .company-master.is-arabic .letter-copy { line-height: 1.9 !important; }
+  .company-master.is-english .letter-copy { font-size: 17px !important; line-height: 1.9 !important; }
+  .company-master.is-english .letter-closing { transform: translateY(-14px) !important; }
+}
