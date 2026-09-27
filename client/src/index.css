@@ -3519,3 +3519,136 @@
     right: 15mm !important;
   }
 }
+
+/* Format 1 content safety: keep compound values intact and isolate LTR data in bilingual text. */
+.is-official-paper:not(.letter-format-2) .letter-keep {
+  display: inline-block;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  vertical-align: baseline;
+}
+.is-official-paper:not(.letter-format-2) .letter-ltr {
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: left;
+}
+.is-official-paper:not(.letter-format-2) .letter-copy {
+  text-align: justify;
+  text-justify: inter-word;
+  orphans: 2;
+  widows: 2;
+}
+
+/* Format 1 final review: lift only the reference row, preserving all other anchors. */
+.is-official-paper:not(.letter-format-2) .letter-meta {
+  transform: translateY(-8px);
+}
+@media print {
+  .is-official-paper:not(.letter-format-2) .letter-meta {
+    transform: translateY(-8px) !important;
+  }
+}
+
+/* Format 1 final spacing: raise only the compact reference row and its QR together. */
+.is-official-paper:not(.letter-format-2) .letter-meta {
+  transform: translateY(-22px);
+}
+.is-official-paper:not(.letter-format-2) .letter-qr {
+  transform: translateY(-14px);
+}
+@media print {
+  .is-official-paper:not(.letter-format-2) .letter-meta {
+    transform: translateY(-22px) !important;
+  }
+  .is-official-paper:not(.letter-format-2) .letter-qr {
+    transform: translateY(-14px) !important;
+  }
+}
+
+/* Arabic Master Format 1: move the signature to the side and open the closing gap. */
+.work-letter-paper.is-official-paper.company-master.is-arabic .letter-signature {
+  right: 15mm !important;
+  left: auto !important;
+  transform: translateY(0) !important;
+}
+@media print {
+  .work-letter-paper.is-official-paper.company-master.is-arabic .letter-signature {
+    right: 15mm !important;
+    left: auto !important;
+    transform: translateY(0) !important;
+  }
+}
+
+/* Keep isolated LTR metadata centered inside its existing grid cell. */
+.is-official-paper:not(.letter-format-2) .letter-meta .letter-ltr {
+  text-align: center;
+}
+@media print {
+  .is-official-paper:not(.letter-format-2) .letter-meta .letter-ltr {
+    text-align: center !important;
+  }
+}
+
+/* Format 1 non-breaking pairs: keep each field label attached to its value. */
+.is-official-paper:not(.letter-format-2) .letter-pair {
+  display: inline-block;
+  white-space: nowrap;
+  word-break: keep-all;
+  overflow-wrap: normal;
+  vertical-align: baseline;
+}
+
+/* Arabic Format 1: keep natural word spacing instead of stretched justification gaps. */
+.is-official-paper.is-arabic:not(.letter-format-2) .letter-copy {
+  text-align: right;
+  text-justify: none;
+  word-spacing: normal;
+}
+
+/* Keep Master English signature clear of the closing line after non-breaking pairs. */
+.work-letter-paper.is-official-paper.company-master.is-english .letter-signature {
+  bottom: 20px !important;
+}
+@media print {
+  .work-letter-paper.is-official-paper.company-master.is-english .letter-signature {
+    bottom: 20px !important;
+  }
+}
+
+/* Keep the long Master English salary pair intact without horizontal overflow. */
+.work-letter-paper.is-official-paper.company-master.is-english .letter-pair:first-of-type {
+  font-size: 17.5px;
+}
+
+/* Format 1 resilience: Yours and the signature follow the body when text grows. */
+.is-official-paper:not(.letter-format-2) .letter-signature {
+  position: relative;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  margin-top: 20px;
+  margin-right: 57px;
+  margin-left: auto;
+  transform: none !important;
+}
+.work-letter-paper.is-official-paper.company-astar .letter-signature {
+  margin-right: 42px;
+}
+@media print {
+  .is-official-paper:not(.letter-format-2) .letter-signature {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    left: auto !important;
+    margin-top: 20px !important;
+    margin-right: 57px !important;
+    margin-left: auto !important;
+    transform: none !important;
+  }
+  .work-letter-paper.is-official-paper.company-astar .letter-signature {
+    margin-right: 42px !important;
+  }
+}
