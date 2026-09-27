@@ -3652,3 +3652,23 @@
     margin-right: 42px !important;
   }
 }
+
+/* MASTER Format 1 English only: keep the signature block near the paper edge. */
+.work-letter-paper.is-official-paper.company-master.is-english .letter-signature {
+  left: auto !important;
+  right: -12px !important;
+  width: 250px !important;
+  min-width: 0 !important;
+  text-align: right !important;
+}
+.work-letter-paper.is-official-paper.company-master.is-english .letter-signature-space,
+.work-letter-paper.is-official-paper.company-master.is-english .signature-issuer {
+  text-align: right !important;
+}
+@media print {
+  .work-letter-paper.is-official-paper.company-master.is-english .letter-signature {
+    left: auto !important;
+    right: -5mm !important;
+    width: 66mm !important;
+  }
+}
