@@ -3679,3 +3679,26 @@
     width: 66mm !important;
   }
 }
+
+/* ASTAR Format 1 English: keep the signature block readable and aligned with the English closing. */
+.work-letter-paper.is-official-paper.company-astar.is-english .letter-signature {
+  width: 250px;
+  min-width: 0;
+  margin-right: auto !important;
+  margin-left: 0 !important;
+  text-align: left !important;
+}
+.work-letter-paper.is-official-paper.company-astar.is-english .signature-issuer {
+  text-align: left !important;
+}
+@media print {
+  .work-letter-paper.is-official-paper.company-astar.is-english .letter-signature {
+    width: 66mm !important;
+    margin-right: auto !important;
+    margin-left: 0 !important;
+    text-align: left !important;
+  }
+  .work-letter-paper.is-official-paper.company-astar.is-english .signature-issuer {
+    text-align: left !important;
+  }
+}

@@ -158,7 +158,7 @@ export function LetterPreview({ data, language, format = 1 }: { data: WorkLetter
     <div className="official-letter-content"><div className="format3-letter-body">
       <div className="format3-qr" aria-label="Employment letter QR code"><QRCodeSVG value={format3Qr} size={82} level="L" boostLevel={false} fgColor="#111111" /></div>
       <h1>{format3Recipient || "TO WHOM IT MAY CONCERN"}</h1>
-      <div className="format3-meta"><p className="format3-reference"><strong>Ref.:</strong> {data.reference}</p><p className="format3-date"><strong>Date:</strong> {format3IssueDate}</p></div>
+      <div className="format3-meta"><p className="format3-reference"><strong>Ref.:</strong> {compactDocumentNumber(data.reference)}</p><p className="format3-date"><strong>Date:</strong> {format3IssueDate}</p></div>
       <p className="format3-subject"><strong>Sub.:</strong> {format3Subject}</p>
       <p>This is to certify that Mr. <strong>{format3EmployeeName}</strong>{format3PassportNo.trim() ? <>, holding Passport No. (<strong>{format3PassportNo}</strong>),</> : null} is currently employed with <strong>{format3CompanyName}</strong> as a <strong>{format3JobTitle}</strong> on a full-time basis, starting from <strong>{format3EmploymentStart}</strong>.</p>
       <p>We further certify that he receives a total monthly salary of <strong>$ {format3SalaryDisplay}</strong> (<strong>{format3SalaryWords}</strong>).</p>
