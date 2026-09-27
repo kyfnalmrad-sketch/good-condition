@@ -2933,6 +2933,8 @@
 .letter-format-2 .format2-letter-body strong { font-weight: 700; }
 .letter-format-2 .format2-letter-body .format2-subject { margin-top: 12px; margin-bottom: 36px; font-weight: 700; }
 .letter-format-2 .format2-letter-body .format2-regards { margin-top: 4px; margin-bottom: 0; line-height: 1.4; }
+.letter-format-2 .format2-signature-space { display: flex; align-items: flex-end; height: 40px; margin-bottom: 6px; }
+.letter-format-2 .format2-signature > strong, .letter-format-2 .format2-signature-issuer, .letter-format-2 .format2-signature-title { display: block; }
 .letter-format-2 .letter-barcode, .letter-format-2 .letter-signature { display: none !important; }
 @media print {
   .letter-format-2 .official-letter-content { top: 24mm; right: 24mm; bottom: 18mm; left: 24mm; }
@@ -2955,18 +2957,24 @@
 .letter-format-2.company-master .format2-letter-body > p:not(.format2-subject):not(.format2-regards) { margin-bottom: 18px; }
 .letter-format-2.company-astar .format2-subject { color: #8b3f35; }
 .letter-format-2.company-master .format2-subject { color: #17375e; }
+.letter-format-2.company-master .format2-signature-space { height: 22px; }
 .letter-format-2.company-astar .format2-signature { display: block; margin-top: 20px; }
 .letter-format-2.company-master .format2-signature { display: block; margin-top: 14px; }
-.letter-format-2.company-astar .format2-signature-line { display: block; width: 180px; height: 22px; margin-bottom: 6px; border-bottom: 1px solid #8b3f35; }
-.letter-format-2.company-master .format2-signature-line { display: block; width: 200px; height: 22px; margin-bottom: 6px; border-bottom: 1px solid #17375e; }
+.letter-format-2.company-astar .format2-signature-line { display: block; width: 180px; height: 0; border-bottom: 1px solid #8b3f35; }
+.letter-format-2.company-master .format2-signature-line { display: block; width: 200px; height: 0; border-bottom: 1px solid #17375e; }
 .letter-format-2.company-astar .format2-signature strong { color: #8b3f35; }
 .letter-format-2.company-master .format2-signature strong { color: #17375e; }
 .letter-format-2 .format2-signature-issuer { color: #52525b; font-size: .92em; }
+.letter-format-2.company-astar .format2-signature-issuer { color: #8b3f35; font-weight: 700; }
+.letter-format-2.company-master .format2-signature-issuer { color: #17375e; font-weight: 700; }
+.letter-format-2 .format2-signature-title { color: #52525b; font-size: .82em; line-height: 1.2; }
 @media print {
   .letter-format-2.company-astar .official-letter-content { top: 52mm !important; right: 20mm !important; bottom: 44mm !important; left: 20mm !important; }
   .letter-format-2.company-master .official-letter-content { top: 50mm !important; right: 20mm !important; bottom: 46mm !important; left: 20mm !important; }
   .letter-format-2.company-astar .format2-signature { margin-top: 20px !important; }
   .letter-format-2.company-master .format2-signature { margin-top: 14px !important; }
+  .letter-format-2 .format2-signature-space { height: 10mm; }
+  .letter-format-2.company-master .format2-signature-space { height: 6mm; }
 }
 
 @media print {
@@ -3170,4 +3178,150 @@
   .company-master.is-arabic .letter-copy { line-height: 1.9 !important; }
   .company-master.is-english .letter-copy { font-size: 17px !important; line-height: 1.9 !important; }
   .company-master.is-english .letter-closing { transform: translateY(-14px) !important; }
+}
+
+
+
+/* Format 1 PDF417: company-specific A4 anchors shared by screen preview and print. */
+.work-letter-paper.is-official-paper:not(.letter-format-2) {
+  --format1-barcode-left: 15mm;
+  --format1-barcode-right: auto;
+  --format1-barcode-bottom: 42mm;
+  --format1-barcode-display: block;
+}
+.work-letter-paper.is-official-paper.is-english:not(.letter-format-2) {
+  --format1-barcode-left: auto;
+  --format1-barcode-right: 15mm;
+}
+.work-letter-paper.is-official-paper:not(.letter-format-2).company-astar { --format1-barcode-bottom: 52mm; }
+.work-letter-paper.is-official-paper:not(.letter-format-2).company-master { --format1-barcode-bottom: 42mm; }
+.work-letter-paper.is-official-paper:not(.letter-format-2).company-horizon-sanaa { --format1-barcode-bottom: 72mm; }
+.work-letter-paper.is-official-paper:not(.letter-format-2).company-yemen-colors-travel { --format1-barcode-bottom: 42mm; }
+.work-letter-paper.is-official-paper:not(.letter-format-2).company-asas-sanaa { --format1-barcode-bottom: 42mm; }
+.work-letter-paper.is-official-paper:not(.letter-format-2).company-yemen-paths-logistics { --format1-barcode-bottom: 42mm; }
+.work-letter-paper.is-official-paper:not(.letter-format-2).company-rawafed-sanaa-agricultural { --format1-barcode-bottom: 42mm; }
+.work-letter-paper.is-official-paper:not(.letter-format-2).company-al-hasani-exchange { --format1-barcode-bottom: 42mm; }
+.work-letter-paper.is-official-paper:not(.letter-format-2).company-najm-tech-updated { --format1-barcode-bottom: 42mm; }
+.work-letter-paper.is-official-paper:not(.letter-format-2).company-safa-pharma { --format1-barcode-bottom: 42mm; }
+.work-letter-paper.is-official-paper:not(.letter-format-2).company-madar-media { --format1-barcode-bottom: 50mm; }
+.work-letter-paper.is-official-paper:not(.letter-format-2).company-riyadah-agri { --format1-barcode-bottom: 50mm; }
+.work-letter-paper.is-official-paper:not(.letter-format-2).company-tawasul-engineering { --format1-barcode-bottom: 50mm; }
+.work-letter-paper.is-official-paper:not(.letter-format-2).company-hayat-education { --format1-barcode-bottom: 50mm; --format1-barcode-display: none; }
+.work-letter-paper.is-official-paper:not(.letter-format-2).company-arkan-finance { --format1-barcode-bottom: 50mm; --format1-barcode-display: none; }
+.work-letter-paper.is-official-paper:not(.letter-format-2):is(
+  .company-astar, .company-master, .company-horizon-sanaa, .company-yemen-colors-travel,
+  .company-asas-sanaa, .company-yemen-paths-logistics, .company-rawafed-sanaa-agricultural,
+  .company-al-hasani-exchange, .company-najm-tech-updated, .company-safa-pharma,
+  .company-madar-media, .company-riyadah-agri, .company-tawasul-engineering,
+  .company-hayat-education, .company-arkan-finance
+) .letter-barcode {
+  left: var(--format1-barcode-left) !important;
+  right: var(--format1-barcode-right) !important;
+  top: auto !important;
+  bottom: var(--format1-barcode-bottom) !important;
+  width: 38mm !important;
+  height: 8.5mm !important;
+  transform: none !important;
+  display: var(--format1-barcode-display) !important;
+}
+
+
+/* Format 2 company isolation: each active company uses its own letterhead and brand settings.
+   Astar/Master remain on their reviewed rules above; Arkan/Hayat are deliberately deferred. */
+.letter-format-2.company-horizon-sanaa { --f2-accent: #0b567a; --f2-top: 52mm; --f2-bottom: 42mm; --f2-side: 18mm; --f2-width: 166mm; --f2-leading: 1.42; --f2-gap: 17px; --f2-sign-width: 184px; }
+.letter-format-2.company-yemen-colors-travel { --f2-accent: #0e858d; --f2-top: 48mm; --f2-bottom: 43mm; --f2-side: 18mm; --f2-width: 164mm; --f2-leading: 1.44; --f2-gap: 17px; --f2-sign-width: 180px; }
+.letter-format-2.company-asas-sanaa { --f2-accent: #a47a25; --f2-top: 52mm; --f2-bottom: 41mm; --f2-side: 18mm; --f2-width: 166mm; --f2-leading: 1.42; --f2-gap: 18px; --f2-sign-width: 188px; }
+.letter-format-2.company-yemen-paths-logistics { --f2-accent: #176ba6; --f2-top: 48mm; --f2-bottom: 43mm; --f2-side: 18mm; --f2-width: 165mm; --f2-leading: 1.43; --f2-gap: 18px; --f2-sign-width: 192px; }
+.letter-format-2.company-rawafed-sanaa-agricultural { --f2-accent: #3f6f56; --f2-top: 47mm; --f2-bottom: 42mm; --f2-side: 18mm; --f2-width: 165mm; --f2-leading: 1.42; --f2-gap: 18px; --f2-sign-width: 184px; }
+.letter-format-2.company-al-hasani-exchange { --f2-accent: #123d6b; --f2-top: 48mm; --f2-bottom: 43mm; --f2-side: 18mm; --f2-width: 164mm; --f2-leading: 1.42; --f2-gap: 17px; --f2-sign-width: 180px; }
+.letter-format-2.company-najm-tech-updated { --f2-accent: #2d6ca8; --f2-top: 49mm; --f2-bottom: 42mm; --f2-side: 18mm; --f2-width: 164mm; --f2-leading: 1.43; --f2-gap: 17px; --f2-sign-width: 186px; }
+.letter-format-2.company-safa-pharma { --f2-accent: #1478ad; --f2-top: 47mm; --f2-bottom: 40mm; --f2-side: 18mm; --f2-width: 168mm; --f2-leading: 1.42; --f2-gap: 18px; --f2-sign-width: 178px; }
+.letter-format-2.company-madar-media { --f2-accent: #8f285f; --f2-top: 48mm; --f2-bottom: 41mm; --f2-side: 18mm; --f2-width: 164mm; --f2-leading: 1.42; --f2-gap: 16px; --f2-sign-width: 184px; }
+.letter-format-2.company-riyadah-agri { --f2-accent: #7a9940; --f2-top: 48mm; --f2-bottom: 42mm; --f2-side: 18mm; --f2-width: 165mm; --f2-leading: 1.42; --f2-gap: 17px; --f2-sign-width: 184px; }
+.letter-format-2.company-tawasul-engineering { --f2-accent: #168c88; --f2-top: 56mm; --f2-bottom: 41mm; --f2-side: 18mm; --f2-width: 165mm; --f2-leading: 1.42; --f2-gap: 18px; --f2-sign-width: 188px; }
+
+.letter-format-2:is(
+  .company-horizon-sanaa, .company-yemen-colors-travel, .company-asas-sanaa,
+  .company-yemen-paths-logistics, .company-rawafed-sanaa-agricultural,
+  .company-al-hasani-exchange, .company-najm-tech-updated, .company-safa-pharma,
+  .company-madar-media, .company-riyadah-agri, .company-tawasul-engineering
+) .company-official-paper { display: block; }
+.letter-format-2:is(
+  .company-horizon-sanaa, .company-yemen-colors-travel, .company-asas-sanaa,
+  .company-yemen-paths-logistics, .company-rawafed-sanaa-agricultural,
+  .company-al-hasani-exchange, .company-najm-tech-updated, .company-safa-pharma,
+  .company-madar-media, .company-riyadah-agri, .company-tawasul-engineering
+) .official-letter-content {
+  top: var(--f2-top); right: var(--f2-side); bottom: var(--f2-bottom); left: var(--f2-side);
+}
+.letter-format-2:is(
+  .company-horizon-sanaa, .company-yemen-colors-travel, .company-asas-sanaa,
+  .company-yemen-paths-logistics, .company-rawafed-sanaa-agricultural,
+  .company-al-hasani-exchange, .company-najm-tech-updated, .company-safa-pharma,
+  .company-madar-media, .company-riyadah-agri, .company-tawasul-engineering
+) .format2-letter-body {
+  max-width: var(--f2-width); font-size: 17px; line-height: var(--f2-leading);
+}
+.letter-format-2:is(
+  .company-horizon-sanaa, .company-yemen-colors-travel, .company-asas-sanaa,
+  .company-yemen-paths-logistics, .company-rawafed-sanaa-agricultural,
+  .company-al-hasani-exchange, .company-najm-tech-updated, .company-safa-pharma,
+  .company-madar-media, .company-riyadah-agri, .company-tawasul-engineering
+) .format2-letter-body > p:not(.format2-subject):not(.format2-regards) { margin-bottom: var(--f2-gap); }
+.letter-format-2:is(
+  .company-horizon-sanaa, .company-yemen-colors-travel, .company-asas-sanaa,
+  .company-yemen-paths-logistics, .company-rawafed-sanaa-agricultural,
+  .company-al-hasani-exchange, .company-najm-tech-updated, .company-safa-pharma,
+  .company-madar-media, .company-riyadah-agri, .company-tawasul-engineering
+) .format2-subject,
+.letter-format-2:is(
+  .company-horizon-sanaa, .company-yemen-colors-travel, .company-asas-sanaa,
+  .company-yemen-paths-logistics, .company-rawafed-sanaa-agricultural,
+  .company-al-hasani-exchange, .company-najm-tech-updated, .company-safa-pharma,
+  .company-madar-media, .company-riyadah-agri, .company-tawasul-engineering
+) .format2-signature > strong { color: var(--f2-accent); }
+.letter-format-2:is(
+  .company-horizon-sanaa, .company-yemen-colors-travel, .company-asas-sanaa,
+  .company-yemen-paths-logistics, .company-rawafed-sanaa-agricultural,
+  .company-al-hasani-exchange, .company-najm-tech-updated, .company-safa-pharma,
+  .company-madar-media, .company-riyadah-agri, .company-tawasul-engineering
+) .format2-signature { display: block; margin-top: 15px; }
+.letter-format-2:is(
+  .company-horizon-sanaa, .company-yemen-colors-travel, .company-asas-sanaa,
+  .company-yemen-paths-logistics, .company-rawafed-sanaa-agricultural,
+  .company-al-hasani-exchange, .company-najm-tech-updated, .company-safa-pharma,
+  .company-madar-media, .company-riyadah-agri, .company-tawasul-engineering
+) .format2-signature-line { display: block; width: var(--f2-sign-width); border-bottom: 1px solid var(--f2-accent); }
+.letter-format-2:is(
+  .company-horizon-sanaa, .company-yemen-colors-travel, .company-asas-sanaa,
+  .company-yemen-paths-logistics, .company-rawafed-sanaa-agricultural,
+  .company-al-hasani-exchange, .company-najm-tech-updated, .company-safa-pharma,
+  .company-madar-media, .company-riyadah-agri, .company-tawasul-engineering
+) .format2-signature-issuer { color: var(--f2-accent); font-weight: 700; }
+
+@media print {
+  .letter-format-2:is(
+    .company-horizon-sanaa, .company-yemen-colors-travel, .company-asas-sanaa,
+    .company-yemen-paths-logistics, .company-rawafed-sanaa-agricultural,
+    .company-al-hasani-exchange, .company-najm-tech-updated, .company-safa-pharma,
+    .company-madar-media, .company-riyadah-agri, .company-tawasul-engineering
+  ) .official-letter-content {
+    top: var(--f2-top) !important; right: var(--f2-side) !important;
+    bottom: var(--f2-bottom) !important; left: var(--f2-side) !important;
+  }
+  .letter-format-2:is(
+    .company-horizon-sanaa, .company-yemen-colors-travel, .company-asas-sanaa,
+    .company-yemen-paths-logistics, .company-rawafed-sanaa-agricultural,
+    .company-al-hasani-exchange, .company-najm-tech-updated, .company-safa-pharma,
+    .company-madar-media, .company-riyadah-agri, .company-tawasul-engineering
+  ) .format2-letter-body {
+    max-width: var(--f2-width) !important; font-size: 14.2pt !important;
+    line-height: var(--f2-leading) !important;
+  }
+  .letter-format-2:is(
+    .company-horizon-sanaa, .company-yemen-colors-travel, .company-asas-sanaa,
+    .company-yemen-paths-logistics, .company-rawafed-sanaa-agricultural,
+    .company-al-hasani-exchange, .company-najm-tech-updated, .company-safa-pharma,
+    .company-madar-media, .company-riyadah-agri, .company-tawasul-engineering
+  ) .format2-signature-space { height: 7mm; }
 }

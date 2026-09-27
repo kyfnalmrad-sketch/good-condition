@@ -1,4 +1,4 @@
-import { ArrowLeft, FilePenLine, Printer } from "lucide-react";
+import { ArrowLeft, FilePenLine, Printer, RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
@@ -47,6 +47,14 @@ export default function WorkLettersPreview() {
     return () => window.removeEventListener("popstate", syncFromHistory);
   }, []);
 
+  const refreshDraft = () => {
+    const fallback = demoFor(companyId, language);
+    const stored = localStorage.getItem(draftKey(companyId, language));
+    if (!stored) { setData(fallback); return; }
+    try { setData({ ...fallback, ...JSON.parse(stored), companyId }); }
+    catch { setData(fallback); }
+  };
+
   const changeCompany = (nextCompanyId: string) => {
     setCompanyId(nextCompanyId);
     setData(demoFor(nextCompanyId, language));
@@ -71,11 +79,12 @@ export default function WorkLettersPreview() {
         {COMPANIES.map(company => <Button key={company.id} variant="outline" onClick={() => changeCompany(company.id)}>{company.short}</Button>)}
         <Button variant="outline" onClick={() => changeLanguage(language === "en" ? "ar" : "en")}>{english ? "العربية" : "English"}</Button>
         {english && <Button variant="outline" onClick={() => changeFormat(format === 2 ? 1 : 2)}>{format === 2 ? "Format 1" : "Format 2 · Embassy letter"}</Button>}
+        <Button variant="outline" onClick={refreshDraft}><RefreshCw size={16} /> {english ? "Update preview" : "تحديث المعاينة"}</Button>
         <Button variant="outline" onClick={() => setLocation(`/work-letters?company=${companyId}&language=${language}${english && format === 2 ? "&format=2" : ""}`)}><FilePenLine size={16} /> {english ? "Edit data" : "تعديل البيانات"}</Button>
         <Button onClick={() => window.print()}><Printer size={16} /> {english ? "Print / PDF" : "طباعة / PDF"}</Button>
       </div>
     </header>
-    <div className="work-letter-preview-notice"><ArrowLeft size={15} /> {english ? (format === 2 ? "Format 2 · Independent embassy-style layout on Astar/Master official stationery; Format 1 remains unchanged." : "Only the official A4 paper is printed; the form and controls are excluded.") : "تتم طباعة الورقة الرسمية A4 فقط، ولا يظهر نموذج الإدخال أو أدوات الموقع."}</div>
+    <div className="work-letter-preview-notice"><ArrowLeft size={15} /> {english ? (format === 2 ? "Format 2 uses the selected company’s own official paper and styling; Format 1 remains separate." : "Only the official A4 paper is printed; the form and controls are excluded.") : (format === 2 ? "يستخدم التنسيق ٢ ورق الشركة المختارة وتنسيقها المستقل." : "تتم طباعة الورقة الرسمية A4 فقط، ولا يظهر نموذج الإدخال أو أدوات الموقع.")}</div>
     <section className="work-letter-preview-stage"><LetterPreview data={{ ...data, companyId }} language={language} format={format} /></section>
   </main>;
 }

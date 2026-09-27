@@ -24,6 +24,9 @@ export type WorkLetterData = {
   recipient: string;
   attention: string;
   subject: string;
+  format2PassportNo: string;
+  format2SignatoryName: string;
+  format2SignatoryTitle: string;
 };
 
 export type WorkLetterBackup = {
@@ -91,6 +94,8 @@ function normalizeData(value: unknown, fallbackCompanyId?: string): WorkLetterDa
     "joiningDate", "issueDate", "reference", "internalNo", "issuerName",
   ];
   if (!companyId || requiredStrings.some(key => typeof value[key] !== "string")) return null;
+  const oldIssuerName = value.issuerName as string;
+  const [legacySignatoryName, ...legacySignatoryTitleParts] = oldIssuerName.split(/[,،]/).map(part => part.trim());
   return {
     companyId,
     employeeName: value.employeeName as string,
@@ -109,6 +114,9 @@ function normalizeData(value: unknown, fallbackCompanyId?: string): WorkLetterDa
     recipient: typeof value.recipient === "string" ? value.recipient : "The Embassy of the Republic of Turkey in Amman",
     attention: typeof value.attention === "string" ? value.attention : "The Consular Section",
     subject: typeof value.subject === "string" ? value.subject : "Letter of Verification of Employment and Support",
+    format2PassportNo: typeof value.format2PassportNo === "string" ? value.format2PassportNo : "10715207",
+    format2SignatoryName: typeof value.format2SignatoryName === "string" ? value.format2SignatoryName : legacySignatoryName || "Ahmed Mohammed",
+    format2SignatoryTitle: typeof value.format2SignatoryTitle === "string" ? value.format2SignatoryTitle : legacySignatoryTitleParts.join(", ") || "Human Resources Manager",
   };
 }
 
