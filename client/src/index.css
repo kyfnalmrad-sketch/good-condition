@@ -3375,3 +3375,147 @@
 .format3-editable-fields { min-width: 0; }
 .format3-editable-fields .work-form-row { grid-template-columns: minmax(0, 1fr); }
 .format3-editable-fields input { width: 100%; min-width: 0; }
+
+/* 1v12 review: keep Format 1 points as independent paragraphs to prevent broken flow. */
+.is-official-paper:not(.letter-format-2) .letter-copy {
+  display: grid;
+  gap: 18px;
+  text-align: justify;
+}
+.is-official-paper:not(.letter-format-2) .letter-copy p {
+  margin: 0;
+  break-inside: avoid;
+}
+.is-official-paper:not(.letter-format-2).is-english .letter-copy {
+  text-align: left;
+}
+
+/* Format 3 review: reference and date share one stable row; reference is red as requested. */
+.letter-format-3 .format3-meta {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  margin: 0 0 21px;
+  direction: ltr;
+}
+.letter-format-3 .format3-meta p {
+  margin: 0;
+}
+.letter-format-3 .format3-reference {
+  color: #b42318;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.letter-format-3 .format3-reference strong {
+  color: #b42318;
+}
+.letter-format-3 .format3-date {
+  margin: 0;
+  text-align: right;
+  white-space: nowrap;
+}
+@media print {
+  .letter-format-3 .format3-meta { margin-bottom: 5mm; }
+}
+
+/* 1v12 review correction: Master Format 1 needs a tighter body after paragraph separation. */
+.work-letter-paper.is-official-paper.company-master.is-english .letter-copy {
+  font-size: 15.5px !important;
+  line-height: 1.7 !important;
+  gap: 12px;
+}
+.work-letter-paper.is-official-paper.company-master.is-english .letter-signature {
+  bottom: -50px;
+}
+@media print {
+  .work-letter-paper.is-official-paper.company-master.is-english .letter-copy {
+    font-size: 15.5px !important;
+    line-height: 1.7 !important;
+    gap: 12px !important;
+  }
+  .work-letter-paper.is-official-paper.company-master.is-english .letter-signature {
+    bottom: -50px !important;
+  }
+}
+
+/* 1v12 final spacing: keep Format 1 barcode opposite the signature. */
+.work-letter-paper.is-official-paper.company-astar.is-english .letter-barcode,
+.work-letter-paper.is-official-paper.company-master.is-english .letter-barcode {
+  left: 15mm !important;
+  right: auto !important;
+}
+
+/* 1v12 final spacing: add breathing room between Format 3 closing and signature. */
+.letter-format-3 .format3-signature {
+  margin-top: 24px;
+}
+@media print {
+  .work-letter-paper.is-official-paper.company-astar.is-english .letter-barcode,
+  .work-letter-paper.is-official-paper.company-master.is-english .letter-barcode {
+    left: 15mm !important;
+    right: auto !important;
+  }
+  .letter-format-3 .format3-signature {
+    margin-top: 7mm !important;
+  }
+}
+
+/* 1v12 refinement: Format 1 reads as one formal, naturally wrapped paragraph. */
+.is-official-paper:not(.letter-format-2) .letter-copy {
+  display: block;
+  margin: 0;
+  text-wrap: pretty;
+}
+.is-official-paper:not(.letter-format-2) .letter-copy p { margin: 0; }
+
+/* Master Format 1: bring the closing sentence and signature into one balanced block. */
+.work-letter-paper.is-official-paper.company-master .letter-signature {
+  bottom: 80px;
+}
+@media print {
+  .work-letter-paper.is-official-paper.company-master .letter-signature {
+    bottom: 80px !important;
+  }
+}
+
+/* Master Format 1 final alignment: override legacy anchor and keep the signature close to the closing line. */
+.work-letter-paper.is-official-paper.company-master.is-english .letter-signature {
+  bottom: 45px !important;
+}
+@media print {
+  .work-letter-paper.is-official-paper.company-master.is-english .letter-signature {
+    bottom: 45px !important;
+  }
+}
+
+/* Format 1: wrap only at normal word spaces; never split words or hyphenate the formal sentence. */
+.is-official-paper:not(.letter-format-2) .letter-copy {
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: normal;
+  hyphens: none;
+  text-wrap: wrap;
+}
+
+/* Match Master Format 1 text size to Astar without changing its existing rhythm or anchors. */
+.work-letter-paper.is-official-paper.company-master.is-english .letter-copy {
+  font-size: 18px !important;
+}
+@media print {
+  .work-letter-paper.is-official-paper.company-master.is-english .letter-copy {
+    font-size: 18px !important;
+  }
+}
+
+/* Approved Master Format 1 alignment: keep the English signature near the page edge, not centered. */
+.work-letter-paper.is-official-paper.company-master.is-english .letter-signature {
+  left: auto !important;
+  right: 15mm !important;
+}
+@media print {
+  .work-letter-paper.is-official-paper.company-master.is-english .letter-signature {
+    left: auto !important;
+    right: 15mm !important;
+  }
+}

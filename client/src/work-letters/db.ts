@@ -37,6 +37,7 @@ export type WorkLetterData = {
   format3JobTitle?: string;
   format3EmploymentStart?: string;
   format3Salary?: string;
+  format3SalaryWords?: string;
   format3SignatoryName?: string;
   format3SignatoryTitle?: string;
 };
