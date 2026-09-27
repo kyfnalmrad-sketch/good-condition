@@ -27,6 +27,18 @@ export type WorkLetterData = {
   format2PassportNo: string;
   format2SignatoryName: string;
   format2SignatoryTitle: string;
+  format3Recipient?: string;
+  format3IssueDate?: string;
+  format3Subject?: string;
+  format3EmployeeName?: string;
+  format3PassportNo?: string;
+  format3CompanyName?: string;
+  format3SignatureCompanyName?: string;
+  format3JobTitle?: string;
+  format3EmploymentStart?: string;
+  format3Salary?: string;
+  format3SignatoryName?: string;
+  format3SignatoryTitle?: string;
 };
 
 export type WorkLetterBackup = {
@@ -117,6 +129,18 @@ function normalizeData(value: unknown, fallbackCompanyId?: string): WorkLetterDa
     format2PassportNo: typeof value.format2PassportNo === "string" ? value.format2PassportNo : "10715207",
     format2SignatoryName: typeof value.format2SignatoryName === "string" ? value.format2SignatoryName : legacySignatoryName || "Ahmed Mohammed",
     format2SignatoryTitle: typeof value.format2SignatoryTitle === "string" ? value.format2SignatoryTitle : legacySignatoryTitleParts.join(", ") || "Human Resources Manager",
+    format3Recipient: typeof value.format3Recipient === "string" ? value.format3Recipient : "TO WHOM IT MAY CONCERN",
+    format3IssueDate: typeof value.format3IssueDate === "string" ? value.format3IssueDate : value.issueDate as string,
+    format3Subject: typeof value.format3Subject === "string" ? value.format3Subject : "Letter of Employment and Salary Verification",
+    format3EmployeeName: typeof value.format3EmployeeName === "string" ? value.format3EmployeeName : value.employeeName as string,
+    format3PassportNo: typeof value.format3PassportNo === "string" ? value.format3PassportNo : typeof value.format2PassportNo === "string" ? value.format2PassportNo : "10715207",
+    format3CompanyName: typeof value.format3CompanyName === "string" ? value.format3CompanyName : companyId === "astar" ? "Aster Gas Yemen Company" : companyId === "master" ? "Master Platinum for Importing Medical and Electronic Equipment and Supplies" : "",
+    format3SignatureCompanyName: typeof value.format3SignatureCompanyName === "string" ? value.format3SignatureCompanyName : companyId === "astar" ? "Aster Gas Yemen" : companyId === "master" ? "Master Platinum" : "",
+    format3JobTitle: typeof value.format3JobTitle === "string" ? value.format3JobTitle : value.jobTitle as string,
+    format3EmploymentStart: typeof value.format3EmploymentStart === "string" ? value.format3EmploymentStart : value.joiningDate as string,
+    format3Salary: typeof value.format3Salary === "string" ? value.format3Salary : value.salary as string,
+    format3SignatoryName: typeof value.format3SignatoryName === "string" ? value.format3SignatoryName : legacySignatoryName || "Ahmed Mohammed",
+    format3SignatoryTitle: typeof value.format3SignatoryTitle === "string" ? value.format3SignatoryTitle : legacySignatoryTitleParts.join(", ") || "Human Resources Manager",
   };
 }
 
