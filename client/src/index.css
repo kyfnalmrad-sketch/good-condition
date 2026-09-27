@@ -2323,6 +2323,11 @@
 }
 .document .doc-photo-name {
   width: 40mm;
+  margin-top: 1mm;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 .document .doc-signatures {
   bottom: 24mm;
@@ -2496,8 +2501,9 @@
   min-height: 36mm;
   max-width: 24mm;
   max-height: 36mm;
-  opacity: 0.24;
-  filter: contrast(1.35) saturate(1.05);
+  opacity: 0.25;
+  filter: none;
+  mix-blend-mode: normal;
 }
 .document .photo-stack .linear-barcode {
   width: 40mm !important;

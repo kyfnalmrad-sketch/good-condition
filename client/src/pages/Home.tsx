@@ -28,6 +28,9 @@ import * as XLSX from "xlsx";
 const officialTemplate = "/assets/official-good-conduct-template-light.png";
 const defaultPhoto = "/assets/training-photo.svg";
 const defaultWatermarkPhoto = "/assets/training-photo-watermark-duotone.svg";
+const savedPhotoNameKey = "good-conduct-photo-name";
+const watermarkLinkedKey = "good-conduct-watermark-linked";
+const linkedWatermarkPhotoKey = "good-conduct-linked-watermark-photo";
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const DOCUMENT_TYPE_OPTIONS = [
   { ar: "جواز سفر", en: "Passport" },
@@ -1192,11 +1195,13 @@ function Barcode({ value }: { value: string }) {
 export function DocumentPreview({
   data,
   photo,
+  photoName = data.fullNameEn,
   watermarkPhoto = photo,
   showWatermark = false,
 }: {
   data: FormState;
   photo: string;
+  photoName?: string;
   watermarkPhoto?: string;
   showWatermark?: boolean;
 }) {
@@ -1279,7 +1284,7 @@ export function DocumentPreview({
           <div className="photo-stack">
             <img className="doc-photo" src={photo} alt="الصورة الشخصية" />
             <span className="doc-photo-name" dir="ltr">
-              {cleanEnglish(data.fullNameEn)}
+              {cleanEnglish(photoName)}
             </span>
             <div className="code-details code-details-en" dir="ltr">
               <span className="passport-number">
@@ -1410,7 +1415,11 @@ export default function Home() {
   const [data, setData] = useState(initial);
   const [photo, setPhoto] = useState(defaultPhoto);
   const [originalPhoto, setOriginalPhoto] = useState(defaultPhoto);
+  const [photoName, setPhotoName] = useState(initial.fullNameEn);
   const [watermarkPhoto, setWatermarkPhoto] = useState(defaultWatermarkPhoto);
+  const [linkedWatermarkPhoto, setLinkedWatermarkPhoto] =
+    useState(defaultWatermarkPhoto);
+  const [watermarkLinked, setWatermarkLinked] = useState(true);
   const [removePhotoBackground, setRemovePhotoBackground] = useState(false);
   const [showWatermark, setShowWatermark] = useState(true);
   const [closingTextMode, setClosingTextMode] = useState<"fixed" | "custom">(
@@ -1443,9 +1452,14 @@ export default function Home() {
     try {
       const saved = localStorage.getItem("good-conduct-form-data");
       const savedPhoto = localStorage.getItem("good-conduct-form-photo");
+      const savedPhotoName = localStorage.getItem(savedPhotoNameKey);
       const savedWatermarkPhoto = localStorage.getItem(
         "good-conduct-watermark-photo"
       );
+      const savedLinkedWatermarkPhoto = localStorage.getItem(
+        linkedWatermarkPhotoKey
+      );
+      const savedWatermarkLinked = localStorage.getItem(watermarkLinkedKey);
       const savedTransparency = localStorage.getItem(
         "good-conduct-remove-photo-background"
       );
@@ -1458,13 +1472,24 @@ export default function Home() {
       const savedDestinations = localStorage.getItem(
         "good-conduct-custom-destinations"
       );
-      if (saved) setData(migrateData(JSON.parse(saved)));
+      if (saved) {
+        const savedData = migrateData(JSON.parse(saved));
+        setData(savedData);
+        setPhotoName(savedPhotoName || savedData.fullNameEn);
+      }
       if (savedPhoto) {
         setPhoto(savedPhoto);
         setOriginalPhoto(savedPhoto);
       }
-      if (savedWatermarkPhoto) setWatermarkPhoto(savedWatermarkPhoto);
-      else if (savedPhoto) setWatermarkPhoto(savedPhoto);
+      if (savedLinkedWatermarkPhoto)
+        setLinkedWatermarkPhoto(savedLinkedWatermarkPhoto);
+      if (savedWatermarkLinked !== "false") {
+        if (savedLinkedWatermarkPhoto) setWatermarkPhoto(savedLinkedWatermarkPhoto);
+        else if (savedWatermarkPhoto) setWatermarkPhoto(savedWatermarkPhoto);
+      } else {
+        setWatermarkLinked(false);
+        if (savedWatermarkPhoto) setWatermarkPhoto(savedWatermarkPhoto);
+      }
       if (savedTransparency !== null)
         setRemovePhotoBackground(savedTransparency === "true");
       if (savedWatermarkVisibility !== null)
@@ -1484,14 +1509,17 @@ export default function Home() {
       try {
         localStorage.setItem("good-conduct-form-data", JSON.stringify(data));
         localStorage.setItem("good-conduct-form-photo", photo);
+        localStorage.setItem(savedPhotoNameKey, photoName);
         localStorage.setItem("good-conduct-watermark-photo", watermarkPhoto);
+        localStorage.setItem(linkedWatermarkPhotoKey, linkedWatermarkPhoto);
+        localStorage.setItem(watermarkLinkedKey, String(watermarkLinked));
         setDraftSaved(true);
       } catch {
         setDraftSaved(false);
       }
     }, 450);
     return () => window.clearTimeout(timer);
-  }, [data, photo, watermarkPhoto]);
+  }, [data, photo, photoName, watermarkPhoto, linkedWatermarkPhoto, watermarkLinked]);
   useEffect(() => {
     localStorage.setItem(
       "good-conduct-remove-photo-background",
@@ -1677,7 +1705,8 @@ export default function Home() {
       const originalPhoto = await readPhoto(file);
       const transparentPhoto = await makeTransparentPhoto(file);
       setOriginalPhoto(originalPhoto);
-      setWatermarkPhoto(transparentPhoto);
+      setLinkedWatermarkPhoto(transparentPhoto);
+      if (watermarkLinked) setWatermarkPhoto(transparentPhoto);
       setPhoto(removePhotoBackground ? transparentPhoto : originalPhoto);
       toast.success(
         removePhotoBackground
@@ -1687,6 +1716,29 @@ export default function Home() {
     } catch {
       toast.error("تعذر معالجة الصورة");
     }
+  };
+  const onWatermarkPhoto = async (file?: File) => {
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("اختر ملف صورة صالحًا للعلامة المائية");
+      return;
+    }
+    if (file.size > MAX_PHOTO_BYTES) {
+      toast.error("حجم صورة العلامة المائية يجب ألا يتجاوز 5 ميجابايت");
+      return;
+    }
+    try {
+      const transparentPhoto = await makeTransparentPhoto(file);
+      setWatermarkPhoto(transparentPhoto);
+      setWatermarkLinked(false);
+      toast.success("تم حفظ صورة العلامة المائية المنفصلة");
+    } catch {
+      toast.error("تعذر معالجة صورة العلامة المائية");
+    }
+  };
+  const toggleWatermarkLink = (linked: boolean) => {
+    setWatermarkLinked(linked);
+    if (linked) setWatermarkPhoto(linkedWatermarkPhoto);
   };
   const transferToRecords = () => {
     if (
@@ -1720,12 +1772,18 @@ export default function Home() {
     setData(cleared);
     setPhoto(defaultPhoto);
     setOriginalPhoto(defaultPhoto);
+    setPhotoName(initial.fullNameEn);
     setWatermarkPhoto(defaultWatermarkPhoto);
     setGenerated(false);
     setDraftSaved(false);
+    setLinkedWatermarkPhoto(defaultWatermarkPhoto);
+    setWatermarkLinked(true);
     localStorage.removeItem("good-conduct-form-data");
     localStorage.removeItem("good-conduct-form-photo");
+    localStorage.removeItem(savedPhotoNameKey);
     localStorage.removeItem("good-conduct-watermark-photo");
+    localStorage.removeItem(linkedWatermarkPhotoKey);
+    localStorage.removeItem(watermarkLinkedKey);
     toast.info("تم مسح بيانات النموذج");
   };
   const generate = () => {
@@ -1738,7 +1796,10 @@ export default function Home() {
     }
     localStorage.setItem("good-conduct-form-data", JSON.stringify(data));
     localStorage.setItem("good-conduct-form-photo", photo);
+    localStorage.setItem(savedPhotoNameKey, photoName);
     localStorage.setItem("good-conduct-watermark-photo", watermarkPhoto);
+    localStorage.setItem(linkedWatermarkPhotoKey, linkedWatermarkPhoto);
+    localStorage.setItem(watermarkLinkedKey, String(watermarkLinked));
     const records = readStoredRecords();
     const record = {
       id: data.internalNo || `${data.issueNo}-${Date.now()}`,
@@ -1763,11 +1824,17 @@ export default function Home() {
     setData(initial);
     setPhoto(defaultPhoto);
     setOriginalPhoto(defaultPhoto);
+    setPhotoName(initial.fullNameEn);
     setWatermarkPhoto(defaultWatermarkPhoto);
     setRemovePhotoBackground(false);
+    setLinkedWatermarkPhoto(defaultWatermarkPhoto);
+    setWatermarkLinked(true);
     localStorage.removeItem("good-conduct-form-data");
     localStorage.removeItem("good-conduct-form-photo");
+    localStorage.removeItem(savedPhotoNameKey);
     localStorage.removeItem("good-conduct-watermark-photo");
+    localStorage.removeItem(linkedWatermarkPhotoKey);
+    localStorage.removeItem(watermarkLinkedKey);
     setGenerated(false);
     setDraftSaved(false);
     toast.info("تمت استعادة البيانات التجريبية");
@@ -2159,6 +2226,38 @@ export default function Home() {
               onChange={e => onPhoto(e.target.files?.[0])}
             />
           </label>
+          <div className="photo-name-editor">
+            <Field
+              label="الاسم أسفل الصورة / Photo name"
+              value={photoName}
+              onChange={setPhotoName}
+              dir="ltr"
+            />
+          </div>
+          <label className="upload-zone watermark-upload-zone">
+            <ImagePlus size={18} />
+            <span>رفع صورة العلامة المائية</span>
+            <small>اختياري</small>
+            <input
+              type="file"
+              accept="image/*"
+              aria-label="رفع صورة العلامة المائية"
+              onChange={e => onWatermarkPhoto(e.target.files?.[0])}
+            />
+          </label>
+          <label className="transparency-toggle">
+            <input
+              type="checkbox"
+              checked={watermarkLinked}
+              onChange={e => toggleWatermarkLink(e.target.checked)}
+            />
+            <span>
+              <strong>ربط العلامة المائية بالصورة الأصلية</strong>
+              <small>
+                عند إلغاء الربط تستخدم الصورة المرفوعة للعلامة المائية فقط
+              </small>
+            </span>
+          </label>
           <label className="transparency-toggle">
             <input
               type="checkbox"
@@ -2343,6 +2442,7 @@ export default function Home() {
                   JSON.stringify(data)
                 );
                 localStorage.setItem("good-conduct-form-photo", photo);
+                localStorage.setItem(savedPhotoNameKey, photoName);
                 localStorage.setItem(
                   "good-conduct-watermark-photo",
                   watermarkPhoto
@@ -2364,6 +2464,7 @@ export default function Home() {
         <DocumentPreview
           data={data}
           photo={photo}
+          photoName={photoName}
           watermarkPhoto={watermarkPhoto}
           showWatermark={showWatermark}
         />

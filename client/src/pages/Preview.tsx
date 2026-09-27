@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 
 const savedDataKey = "good-conduct-form-data";
 const savedPhotoKey = "good-conduct-form-photo";
+const savedPhotoNameKey = "good-conduct-photo-name";
 const savedWatermarkPhotoKey = "good-conduct-watermark-photo";
 const defaultWatermarkPhoto = "/assets/training-photo-watermark-duotone.svg";
 
@@ -19,6 +20,7 @@ export default function Preview() {
   const [, setLocation] = useLocation();
   const [data, setData] = useState<FormState>(initial);
   const [photo, setPhoto] = useState("/assets/training-photo.svg");
+  const [photoName, setPhotoName] = useState(initial.fullNameEn);
   const [watermarkPhoto, setWatermarkPhoto] = useState(defaultWatermarkPhoto);
   const [showWatermark, setShowWatermark] = useState(true);
 
@@ -33,11 +35,16 @@ export default function Preview() {
     try {
       const storedData = localStorage.getItem(savedDataKey);
       const storedPhoto = localStorage.getItem(savedPhotoKey);
+      const storedPhotoName = localStorage.getItem(savedPhotoNameKey);
       const storedWatermarkPhoto = localStorage.getItem(savedWatermarkPhotoKey);
       const storedWatermarkVisibility = localStorage.getItem(
         "good-conduct-show-watermark"
       );
-      if (storedData) setData(migrateData(JSON.parse(storedData)));
+      if (storedData) {
+        const nextData = migrateData(JSON.parse(storedData));
+        setData(nextData);
+        setPhotoName(storedPhotoName || nextData.fullNameEn);
+      }
       if (storedPhoto) setPhoto(storedPhoto);
       if (storedWatermarkPhoto) setWatermarkPhoto(storedWatermarkPhoto);
       else if (storedPhoto) setWatermarkPhoto(storedPhoto);
@@ -87,6 +94,7 @@ export default function Preview() {
       <DocumentPreview
         data={data}
         photo={photo}
+        photoName={photoName}
         watermarkPhoto={watermarkPhoto}
         showWatermark={showWatermark}
       />
