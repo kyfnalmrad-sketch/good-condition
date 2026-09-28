@@ -20,7 +20,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
-import bwipjs from "@bwip-js/browser";
 import { useLocation } from "wouter";
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as XLSX from "xlsx";
@@ -1134,64 +1133,6 @@ function AutoButton({
     </Button>
   );
 }
-function AdvancedBarcode({
-  value,
-  bcid,
-  className = "advanced-barcode",
-}: {
-  value: string;
-  bcid: "pdf417" | "azteccode";
-  className?: string;
-}) {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    if (ref.current)
-      bwipjs.toCanvas(ref.current, {
-        bcid,
-        text: value || "TRAINING",
-        scale: 2,
-        height: bcid === "pdf417" ? 10 : 14,
-        includetext: false,
-        padding: 0,
-      });
-  }, [value, bcid]);
-  return (
-    <canvas
-      ref={ref}
-      className={className}
-      data-barcode-value={value}
-      aria-label={bcid === "pdf417" ? "باركود PDF417" : "باركود Aztec"}
-    />
-  );
-}
-function Barcode({ value }: { value: string }) {
-  const svg = useMemo(() => {
-    try {
-      return bwipjs
-        .toSVG({
-          bcid: "pdf417",
-          text: value || "TRAINING",
-          scale: 3,
-          height: 10,
-          includetext: false,
-          padding: 0,
-          barcolor: "B8860B",
-        })
-        .replace("<svg ", '<svg preserveAspectRatio="none" ');
-    } catch {
-      return "";
-    }
-  }, [value]);
-  return (
-    <div
-      className="linear-barcode"
-      data-barcode-value={value}
-      aria-label="باركود شريطي"
-      dangerouslySetInnerHTML={{ __html: svg }}
-    />
-  );
-}
-
 export function DocumentPreview({
   data,
   photo,
@@ -1257,14 +1198,6 @@ export function DocumentPreview({
     `BIRTH DATE: ${formatDate(data.birthDate)}`,
     `RECORD NO: ${data.issueNo}`,
   ].join("\n");
-  const barcodePayload = [
-    data.issueNo,
-    data.referenceNo,
-    data.internalNo,
-    data.issuanceNo,
-  ]
-    .filter(Boolean)
-    .join("|");
   return (
     <div className="document-wrap">
       <article className="document" id="print-document">
@@ -1292,7 +1225,6 @@ export function DocumentPreview({
               </span>
               <span>Birth Place: {cleanEnglish(data.birthPlaceEn)}</span>
             </div>
-            <Barcode value={barcodePayload} />
           </div>
           <div className="doc-meta">
             <div>
@@ -1370,7 +1302,7 @@ export function DocumentPreview({
         </div>
         <div className="doc-signatures">
           <div className="office-signature">
-            <b dir="rtl">مدير الجنائية والبحث م/عدن</b>
+            <b dir="rtl">مدير الأدلة الجنائية م/عدن</b>
           </div>
           <div className="office-signature">
             <b dir="rtl">الحاسب الآلي م/عدن</b>
@@ -2023,13 +1955,16 @@ export default function Home() {
           <div className="symbol-tester">
             <div className="symbol-tester-head">
               <span>LIVE CHECK</span>
-              <strong>QR والباركود</strong>
+              <strong>QR والبيانات النظامية</strong>
             </div>
-            <p>QR لبيانات الشخص، والباركود لرقم القيد والمرجعي ورقم الإصدار.</p>
+            <p>
+              QR لبيانات الشخص؛ وتظهر أرقام القيد والمرجعي والإصدار في خاناتها
+              الرسمية.
+            </p>
             <div className="test-payload">
-              <span>Barcode</span>
+              <span>Identifiers</span>
               <code>
-                ISSUE NO: {data.issueNo} | REFERENCE NO: {data.referenceNo} |
+                RECORD NO: {data.issueNo} | REFERENCE NO: {data.referenceNo} |
                 ISSUANCE NO: {data.issuanceNo}
               </code>
               <b>يتحدث تلقائيًا</b>

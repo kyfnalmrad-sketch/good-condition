@@ -1435,7 +1435,7 @@
   font-size: clamp(9px, 1.05vw, 13px);
 }
 
-/* Exact portrait photo size: 4cm wide by 6cm high on the A4 certificate. */
+/* Base portrait layout; the final portrait is reduced slightly in the last certificate overrides. */
 .doc-top {
   grid-template-columns: 40mm 1fr 15%;
 }
@@ -1450,7 +1450,7 @@
   object-fit: cover;
 }
 
-/* Lift the closing notice and pair each Arabic office title with its English equivalent. */
+/* Early closing-notice baseline; final note and Arabic signature spacing is set below. */
 .doc-notes {
   bottom: 11.2%;
 }
@@ -1530,7 +1530,7 @@
   margin-top: 0.8%;
 }
 .doc-notes {
-  bottom: 15.4%;
+  bottom: 21.8%;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 6%;
   padding-top: 0;
@@ -2082,7 +2082,7 @@
 /* Return the data table to its natural flow, then lift it by 2 cm visually. */
 .document .doc-table {
   position: relative;
-  top: -20mm;
+  top: -30mm;
 }
 
 /* Official photo: remove the frame and lower it by 0.5 cm on an A4 sheet. */
@@ -2124,7 +2124,7 @@
 /* Lift the closing statement with the data table and preserve their spacing. */
 .document .doc-statement {
   position: relative;
-  top: -20mm;
+  top: -30mm;
   margin-top: 0.8%;
 }
 
@@ -2348,8 +2348,8 @@
   background: transparent;
 }
 .document .doc-signatures {
-  bottom: 24mm;
-  column-gap: 28%;
+  bottom: 39mm;
+  column-gap: 10%;
 }
 
 /* Approved login gateway concept */
@@ -2730,6 +2730,86 @@
   font: 700 8px Arial, sans-serif;
   line-height: 1;
   text-align: center;
+}
+/* Final good-conduct layout: clear PDF417, raise notices, and fit signatures above the footer. */
+.document .doc-table {
+  top: -38mm;
+}
+.document .doc-statement {
+  top: -38mm;
+}
+.document .doc-notes {
+  bottom: 21.8%;
+}
+.document .doc-signatures {
+  left: 6%;
+  right: 6%;
+  bottom: 51mm;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  column-gap: 14%;
+  align-items: end;
+}
+.document .office-signature {
+  width: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  text-align: center;
+}
+.document .office-signature b {
+  color: #111;
+  font: 700 16px/1.2 "Noto Naskh Arabic", Arial, sans-serif;
+  white-space: nowrap;
+}
+.document .office-signature:first-child {
+  justify-self: start;
+  align-items: flex-start;
+  text-align: left;
+}
+.document .office-signature:last-child {
+  justify-self: end;
+  align-items: flex-end;
+  text-align: right;
+}
+.document .photo-stack {
+  width: 36mm;
+  height: 54mm;
+  min-width: 36mm;
+  min-height: 54mm;
+  max-width: 36mm;
+  max-height: 54mm;
+}
+.document .photo-stack .doc-photo {
+  width: 36mm;
+  height: 54mm;
+  min-width: 36mm;
+  min-height: 54mm;
+  max-width: 36mm;
+  max-height: 54mm;
+}
+.document .doc-photo-name {
+  width: 36mm;
+  max-width: 36mm;
+}
+.document .qr-box > span {
+  width: 37mm;
+  max-width: none;
+  overflow: visible;
+  text-align: center;
+  white-space: nowrap;
+}
+.document .code-details-ar {
+  width: 37mm;
+  max-width: 37mm;
+  gap: 1mm;
+}
+.document .code-details-ar > span {
+  display: block;
+  max-width: none;
+  overflow: visible;
+  font: 700 6px/1.2 Arial, sans-serif;
+  white-space: nowrap;
 }
 /* Independent work-letters workspace */
 .work-letters-app { min-height: 100vh; display: grid; grid-template-columns: 260px minmax(0, 1fr); background: #e8e7e2; color: #26343b; }
