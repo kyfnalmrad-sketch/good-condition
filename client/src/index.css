@@ -2713,6 +2713,53 @@
   line-height: 1;
   text-align: center;
 }
+
+/* Good-conduct certificate footer: slightly larger EN QR with identity beneath it. */
+.document .doc-lower-header {
+  min-height: 15%;
+}
+.document .doc-lower-right {
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 1mm;
+}
+.document .doc-lower-qr {
+  flex: 0 0 auto;
+  width: 30mm;
+  height: 33mm;
+  min-height: 0;
+  grid-template-rows: 30mm auto;
+  justify-items: center;
+  align-content: start;
+  gap: 1mm;
+}
+.document .doc-lower-qr svg {
+  width: 30mm;
+  height: 30mm;
+}
+.document .doc-lower-qr-label {
+  margin-top: 0;
+}
+.document .doc-lower-identity {
+  width: 42mm;
+  max-width: 100%;
+  align-self: center;
+  align-items: center;
+  gap: 2px;
+  padding-top: 0;
+  text-align: center;
+}
+.document .doc-lower-identity .doc-lower-name {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+.document .doc-lower-identity .doc-lower-record-number {
+  align-self: center;
+  white-space: nowrap;
+}
+
 /* Independent work-letters workspace */
 .work-letters-app { min-height: 100vh; display: grid; grid-template-columns: 260px minmax(0, 1fr); background: #e8e7e2; color: #26343b; }
 .work-letters-entry { border-color: #b28c35 !important; color: #7b5d1c !important; }
@@ -2849,8 +2896,6 @@
 .company-madar-media { --letter-brand: #8f285f; }
 .company-riyadah-agri { --letter-brand: #7a9940; }
 .company-tawasul-engineering { --letter-brand: #168c88; }
-.company-hayat-education { --letter-brand: #e18a2d; }
-.company-arkan-finance { --letter-brand: #3b6e65; }
 .layout-b .letter-qr { left: 0; right: auto; }
 .layout-b .letter-barcode { left: auto; right: 56px; }
 .layout-b .letter-signature { right: auto; left: 112px; }
@@ -2864,8 +2909,6 @@
 .layout-c.is-english .letter-barcode { left: auto; right: 56px; }
 .layout-c .letter-signature { right: 72px; bottom: 225px; }
 .layout-c.is-english .letter-signature { right: auto; left: 72px; }
-.company-hayat-education .letter-copy, .company-arkan-finance .letter-copy { font-size: 16px; line-height: 1.9; }
-.company-hayat-education .letter-main h1, .company-arkan-finance .letter-main h1 { margin-bottom: 54px; }
 .is-english { direction: ltr; font-family: Georgia, "Times New Roman", serif; }
 .is-english .letter-header h2 { font-family: Georgia, "Times New Roman", serif; font-size: 19px; }
 .is-english .letter-main h1 { font-family: Georgia, "Times New Roman", serif; font-size: 29px; font-weight: 700; text-decoration: none; }
@@ -3036,22 +3079,6 @@
   .is-official-paper:not(.letter-format-2) .letter-barcode { bottom: -20px !important; }
 }
 
-/* Company-specific Format 1 refinements for review. */
-@media print {
-  /* Arkan + Hayat: no PDF417; lower document metadata 2mm; lift HR block 1mm. */
-  .company-arkan-finance .letter-barcode,
-  .company-hayat-education .letter-barcode { display: none !important; }
-  .company-arkan-finance .letter-meta,
-  .company-hayat-education .letter-meta { transform: translateY(2mm); }
-  .company-arkan-finance .letter-signature,
-  .company-hayat-education .letter-signature { transform: translateY(-1mm); }
-
-  /* All other Format 1 templates retain the e508333 structure raised 3mm. */
-  .is-official-paper:not(.company-arkan-finance):not(.company-hayat-education) .official-letter-content { transform: translateY(-3mm) !important; }
-  .is-official-paper:not(.company-arkan-finance):not(.company-hayat-education) .letter-barcode { bottom: -45px !important; }
-  .is-official-paper:not(.company-arkan-finance):not(.company-hayat-education) .letter-signature { bottom: -60px !important; }
-}
-
 /* Final all-template Format 1 adjustment: +3mm lift and wider side separation. */
 @media print {
   .is-official-paper:not(.letter-format-2) .official-letter-content { transform: translateY(-6mm) !important; }
@@ -3059,8 +3086,6 @@
   .is-official-paper.is-english:not(.letter-format-2) .letter-barcode { left: auto !important; right: 15mm !important; }
   .is-official-paper:not(.letter-format-2) .letter-signature { right: 15mm !important; left: auto !important; bottom: -60px !important; }
   .is-official-paper.is-english:not(.letter-format-2) .letter-signature { right: auto !important; left: 15mm !important; bottom: -60px !important; }
-  .company-arkan-finance .letter-barcode,
-  .company-hayat-education .letter-barcode { display: none !important; }
 }
 
 /* 1v12 review pass: keep Astar and Horizon signatures above the footer. */
@@ -3123,23 +3148,6 @@
 /* Final spacing pass: bring signatures closer to the closing line. */
 .is-official-paper:not(.letter-format-2) .letter-signature { transform: translateY(-24px); }
 
-/* Arkan and Hayat: reference/date beside the subject line, without the internal number. */
-.company-arkan-finance .letter-meta,
-.company-hayat-education .letter-meta { position: absolute; top: 78px; left: 92px; right: 92px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; padding: 0; z-index: 2; }
-.company-arkan-finance .letter-meta > div:first-child,
-.company-hayat-education .letter-meta > div:first-child { display: none; }
-.company-arkan-finance .letter-meta > div:nth-child(2),
-.company-hayat-education .letter-meta > div:nth-child(2) { grid-column: 1; }
-.company-arkan-finance .letter-meta > div:nth-child(3),
-.company-hayat-education .letter-meta > div:nth-child(3) { grid-column: 2; }
-.company-arkan-finance .letter-meta div,
-.company-hayat-education .letter-meta div { gap: 4px; }
-@media print {
-  .is-official-paper:not(.letter-format-2) .letter-signature { transform: translateY(-24px) !important; }
-  .company-arkan-finance .letter-meta,
-  .company-hayat-education .letter-meta { top: 78px !important; left: 24mm !important; right: 24mm !important; }
-}
-
 /* Per-template closing balance requested for the review pass. */
 @media print {
   /* Astar + Horizon: a little more breathing room after the closing line. */
@@ -3149,11 +3157,6 @@
   /* Master: bring the signature block slightly closer to the closing line. */
   .work-letter-paper.is-official-paper.company-master .letter-signature { bottom: -20px !important; }
 
-  /* Arkan + Hayat: lower the full structure slightly, then tighten the signature gap. */
-  .work-letter-paper.is-official-paper.company-arkan-finance .official-letter-content,
-  .work-letter-paper.is-official-paper.company-hayat-education .official-letter-content { transform: translateY(-3mm) !important; }
-  .work-letter-paper.is-official-paper.company-arkan-finance .letter-signature,
-  .work-letter-paper.is-official-paper.company-hayat-education .letter-signature { bottom: -25px !important; }
 }
 
 
@@ -3213,14 +3216,11 @@
 .work-letter-paper.is-official-paper:not(.letter-format-2).company-madar-media { --format1-barcode-bottom: 50mm; }
 .work-letter-paper.is-official-paper:not(.letter-format-2).company-riyadah-agri { --format1-barcode-bottom: 50mm; }
 .work-letter-paper.is-official-paper:not(.letter-format-2).company-tawasul-engineering { --format1-barcode-bottom: 50mm; }
-.work-letter-paper.is-official-paper:not(.letter-format-2).company-hayat-education { --format1-barcode-bottom: 50mm; --format1-barcode-display: none; }
-.work-letter-paper.is-official-paper:not(.letter-format-2).company-arkan-finance { --format1-barcode-bottom: 50mm; --format1-barcode-display: none; }
 .work-letter-paper.is-official-paper:not(.letter-format-2):is(
   .company-astar, .company-master, .company-horizon-sanaa, .company-yemen-colors-travel,
   .company-asas-sanaa, .company-yemen-paths-logistics, .company-rawafed-sanaa-agricultural,
   .company-al-hasani-exchange, .company-najm-tech-updated, .company-safa-pharma,
-  .company-madar-media, .company-riyadah-agri, .company-tawasul-engineering,
-  .company-hayat-education, .company-arkan-finance
+  .company-madar-media, .company-riyadah-agri, .company-tawasul-engineering
 ) .letter-barcode {
   left: var(--format1-barcode-left) !important;
   right: var(--format1-barcode-right) !important;
@@ -3234,7 +3234,7 @@
 
 
 /* Format 2 company isolation: each active company uses its own letterhead and brand settings.
-   Astar/Master remain on their reviewed rules above; Arkan/Hayat are deliberately deferred. */
+   Every active company keeps its own paper, accent, spacing, and signature rules. */
 .letter-format-2.company-horizon-sanaa { --f2-accent: #0b567a; --f2-top: 52mm; --f2-bottom: 42mm; --f2-side: 18mm; --f2-width: 166mm; --f2-leading: 1.42; --f2-gap: 17px; --f2-sign-width: 184px; }
 .letter-format-2.company-yemen-colors-travel { --f2-accent: #0e858d; --f2-top: 48mm; --f2-bottom: 43mm; --f2-side: 18mm; --f2-width: 164mm; --f2-leading: 1.44; --f2-gap: 17px; --f2-sign-width: 180px; }
 .letter-format-2.company-asas-sanaa { --f2-accent: #a47a25; --f2-top: 52mm; --f2-bottom: 41mm; --f2-side: 18mm; --f2-width: 166mm; --f2-leading: 1.42; --f2-gap: 18px; --f2-sign-width: 188px; }
@@ -3334,13 +3334,39 @@
 }
 
 
-/* Format 3: independent employment/salary verification layout for Astar and Master only. */
+/* Format 3: all active companies get an isolated A4 employment/salary layout on their own letterhead. */
 .letter-format-selector { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .format3-editable-fields { display: grid; gap: 11px; padding: 14px; border: 1px solid #cdd5df; border-radius: 10px; background: #f8fafc; }
 .format3-editable-fields-title { color: #334155; font-size: 11px; }
-.letter-format-3 { color: #18212b; background: #fff; font-family: Georgia, "Times New Roman", serif; }
-.letter-format-3.company-astar { --f3-accent: #8b3f35; --f3-top: 51mm; --f3-bottom: 43mm; --f3-side: 20mm; --f3-width: 168mm; --f3-gap: 17px; --f3-sign-width: 228px; }
-.letter-format-3.company-master { --f3-accent: #17375e; --f3-top: 50mm; --f3-bottom: 45mm; --f3-side: 20mm; --f3-width: 166mm; --f3-gap: 17px; --f3-sign-width: 242px; font-family: Arial, Helvetica, sans-serif; }
+.letter-format-3 {
+  --f3-accent: #203f5c;
+  --f3-top: 50mm;
+  --f3-bottom: 43mm;
+  --f3-side: 18mm;
+  --f3-width: 164mm;
+  --f3-gap: 17px;
+  --f3-sign-width: 184px;
+  --f3-sign-line-width: 154px;
+  --f3-sign-gap: 22px;
+  --f3-sign-print-gap: 7mm;
+  --f3-font: Georgia, "Times New Roman", serif;
+  color: #18212b;
+  background: #fff;
+  font-family: var(--f3-font);
+}
+.letter-format-3.company-astar { --f3-accent: #8b3f35; --f3-top: 51mm; --f3-bottom: 43mm; --f3-side: 20mm; --f3-width: 168mm; --f3-gap: 17px; --f3-sign-width: 228px; --f3-sign-line-width: 174px; --f3-sign-gap: 24px; --f3-sign-print-gap: 7mm; }
+.letter-format-3.company-master { --f3-accent: #17375e; --f3-top: 50mm; --f3-bottom: 45mm; --f3-side: 20mm; --f3-width: 166mm; --f3-gap: 17px; --f3-sign-width: 242px; --f3-sign-line-width: 174px; --f3-sign-gap: 24px; --f3-sign-print-gap: 7mm; --f3-font: Arial, Helvetica, sans-serif; }
+.letter-format-3.company-horizon-sanaa { --f3-accent: #0b567a; --f3-top: 52mm; --f3-bottom: 42mm; --f3-side: 18mm; --f3-width: 166mm; --f3-gap: 17px; --f3-sign-width: 184px; --f3-sign-line-width: 150px; --f3-sign-gap: 22px; --f3-sign-print-gap: 6.5mm; --f3-font: Arial, Helvetica, sans-serif; }
+.letter-format-3.company-yemen-colors-travel { --f3-accent: #0e858d; --f3-top: 48mm; --f3-bottom: 43mm; --f3-side: 18mm; --f3-width: 164mm; --f3-gap: 17px; --f3-sign-width: 180px; --f3-sign-line-width: 144px; --f3-sign-gap: 20px; --f3-sign-print-gap: 6mm; }
+.letter-format-3.company-asas-sanaa { --f3-accent: #a47a25; --f3-top: 52mm; --f3-bottom: 41mm; --f3-side: 18mm; --f3-width: 166mm; --f3-gap: 18px; --f3-sign-width: 188px; --f3-sign-line-width: 156px; --f3-sign-gap: 22px; --f3-sign-print-gap: 6.5mm; --f3-font: Arial, Helvetica, sans-serif; }
+.letter-format-3.company-yemen-paths-logistics { --f3-accent: #176ba6; --f3-top: 48mm; --f3-bottom: 43mm; --f3-side: 18mm; --f3-width: 165mm; --f3-gap: 18px; --f3-sign-width: 192px; --f3-sign-line-width: 160px; --f3-sign-gap: 23px; --f3-sign-print-gap: 7mm; --f3-font: Arial, Helvetica, sans-serif; }
+.letter-format-3.company-rawafed-sanaa-agricultural { --f3-accent: #3f6f56; --f3-top: 47mm; --f3-bottom: 42mm; --f3-side: 18mm; --f3-width: 165mm; --f3-gap: 18px; --f3-sign-width: 184px; --f3-sign-line-width: 152px; --f3-sign-gap: 22px; --f3-sign-print-gap: 6.5mm; }
+.letter-format-3.company-al-hasani-exchange { --f3-accent: #123d6b; --f3-top: 48mm; --f3-bottom: 43mm; --f3-side: 18mm; --f3-width: 164mm; --f3-gap: 17px; --f3-sign-width: 180px; --f3-sign-line-width: 146px; --f3-sign-gap: 20px; --f3-sign-print-gap: 6mm; --f3-font: Arial, Helvetica, sans-serif; }
+.letter-format-3.company-najm-tech-updated { --f3-accent: #2d6ca8; --f3-top: 49mm; --f3-bottom: 42mm; --f3-side: 18mm; --f3-width: 164mm; --f3-gap: 17px; --f3-sign-width: 186px; --f3-sign-line-width: 152px; --f3-sign-gap: 21px; --f3-sign-print-gap: 6.5mm; --f3-font: Arial, Helvetica, sans-serif; }
+.letter-format-3.company-safa-pharma { --f3-accent: #1478ad; --f3-top: 47mm; --f3-bottom: 40mm; --f3-side: 18mm; --f3-width: 168mm; --f3-gap: 18px; --f3-sign-width: 178px; --f3-sign-line-width: 142px; --f3-sign-gap: 20px; --f3-sign-print-gap: 6mm; --f3-font: Arial, Helvetica, sans-serif; }
+.letter-format-3.company-madar-media { --f3-accent: #8f285f; --f3-top: 48mm; --f3-bottom: 41mm; --f3-side: 18mm; --f3-width: 164mm; --f3-gap: 16px; --f3-sign-width: 184px; --f3-sign-line-width: 150px; --f3-sign-gap: 20px; --f3-sign-print-gap: 6mm; }
+.letter-format-3.company-riyadah-agri { --f3-accent: #7a9940; --f3-top: 48mm; --f3-bottom: 42mm; --f3-side: 18mm; --f3-width: 165mm; --f3-gap: 17px; --f3-sign-width: 184px; --f3-sign-line-width: 152px; --f3-sign-gap: 21px; --f3-sign-print-gap: 6.5mm; }
+.letter-format-3.company-tawasul-engineering { --f3-accent: #168c88; --f3-top: 56mm; --f3-bottom: 41mm; --f3-side: 18mm; --f3-width: 165mm; --f3-gap: 18px; --f3-sign-width: 188px; --f3-sign-line-width: 154px; --f3-sign-gap: 23px; --f3-sign-print-gap: 7mm; --f3-font: Arial, Helvetica, sans-serif; }
 .letter-format-3 .company-official-paper { display: block; }
 .letter-format-3 .letter-barcode { display: none !important; }
 .letter-format-3 .official-letter-content { top: var(--f3-top); right: var(--f3-side); bottom: var(--f3-bottom); left: var(--f3-side); }
@@ -3353,17 +3379,16 @@
 .letter-format-3 .format3-subject { margin: 0 0 26px; color: var(--f3-accent); font-weight: 700; }
 .letter-format-3 .format3-letter-body > p:not(.format3-date):not(.format3-subject):not(.format3-regards) { margin: 0 0 var(--f3-gap); }
 .letter-format-3 .format3-regards { margin: 25px 0 0; line-height: 1.4; }
-.letter-format-3 .format3-signature { width: var(--f3-sign-width); margin-top: 12px; color: var(--f3-accent); }
+.letter-format-3 .format3-signature { width: var(--f3-sign-width); margin-top: var(--f3-sign-gap); color: var(--f3-accent); }
 .letter-format-3 .format3-signature-space { display: flex; align-items: flex-end; height: 30px; margin-bottom: 6px; }
-.letter-format-3 .format3-signature-space span { display: block; width: 174px; border-bottom: 1px solid var(--f3-accent); }
+.letter-format-3 .format3-signature-space span { display: block; width: var(--f3-sign-line-width); border-bottom: 1px solid var(--f3-accent); }
 .letter-format-3 .format3-signature > strong,
 .letter-format-3 .format3-signature > span { display: block; }
 .letter-format-3 .format3-signature > strong { color: var(--f3-accent); font-size: 15px; }
 .letter-format-3 .format3-signature > span { margin-top: 3px; color: #3f4852; font-size: 13px; }
 .letter-format-3 .format3-signature .format3-signature-title { color: #626b75; font-size: 12px; }
 @media print {
-  .letter-format-3.company-astar .official-letter-content { top: 51mm !important; right: 20mm !important; bottom: 43mm !important; left: 20mm !important; }
-  .letter-format-3.company-master .official-letter-content { top: 50mm !important; right: 20mm !important; bottom: 45mm !important; left: 20mm !important; }
+  .letter-format-3 .official-letter-content { top: var(--f3-top) !important; right: var(--f3-side) !important; bottom: var(--f3-bottom) !important; left: var(--f3-side) !important; }
   .letter-format-3 .format3-letter-body { max-width: var(--f3-width); font-size: 13.2pt; line-height: 1.48; }
   .letter-format-3 .format3-qr svg { width: 20mm; height: 20mm; }
   .letter-format-3 .format3-letter-body h1 { min-height: 22mm; font-size: 16pt; }
@@ -3371,7 +3396,7 @@
   .letter-format-3 .format3-subject { margin-bottom: 7mm; }
   .letter-format-3 .format3-letter-body > p:not(.format3-date):not(.format3-subject):not(.format3-regards) { margin-bottom: 4.2mm; }
   .letter-format-3 .format3-regards { margin-top: 6mm; }
-  .letter-format-3 .format3-signature { margin-top: 2.5mm; }
+  .letter-format-3 .format3-signature { margin-top: var(--f3-sign-print-gap) !important; }
   .letter-format-3 .format3-signature-space { height: 8mm; margin-bottom: 1.5mm; }
   .letter-format-3 .format3-signature > strong { font-size: 11pt; }
   .letter-format-3 .format3-signature > span { font-size: 9.5pt; }
@@ -3397,7 +3422,7 @@
   text-align: left;
 }
 
-/* Format 3 review: reference and date share one stable row; reference is red as requested. */
+/* Format 3 review: reference/date share one stable row; reference follows the selected company accent. */
 .letter-format-3 .format3-meta {
   display: flex;
   align-items: baseline;
@@ -3410,12 +3435,12 @@
   margin: 0;
 }
 .letter-format-3 .format3-reference {
-  color: #b42318;
+  color: var(--f3-accent);
   font-weight: 700;
   white-space: nowrap;
 }
 .letter-format-3 .format3-reference strong {
-  color: #b42318;
+  color: var(--f3-accent);
 }
 .letter-format-3 .format3-date {
   margin: 0;
@@ -3453,18 +3478,12 @@
   right: auto !important;
 }
 
-/* 1v12 final spacing: add breathing room between Format 3 closing and signature. */
-.letter-format-3 .format3-signature {
-  margin-top: 24px;
-}
+/* Per-company Format 3 signature spacing is controlled by --f3-sign-gap and --f3-sign-print-gap. */
 @media print {
   .work-letter-paper.is-official-paper.company-astar.is-english .letter-barcode,
   .work-letter-paper.is-official-paper.company-master.is-english .letter-barcode {
     left: 15mm !important;
     right: auto !important;
-  }
-  .letter-format-3 .format3-signature {
-    margin-top: 7mm !important;
   }
 }
 

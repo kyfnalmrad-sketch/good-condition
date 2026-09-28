@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { draftKey } from "./db";
-import { COMPANIES, demoFor, LetterPreview, supportsFormat3, type Language, type LetterFormat } from "./WorkLettersApp";
+import { COMPANIES, demoFor, LetterPreview, normalizeCompanyId, supportsFormat3, type Language, type LetterFormat } from "./WorkLettersApp";
 import type { WorkLetterData } from "./db";
 
 function routeState() {
   const params = new URLSearchParams(window.location.search);
-  const companyId = params.get("company") || "astar";
+  const companyId = normalizeCompanyId(params.get("company") || "astar");
   const language: Language = params.get("language") === "en" ? "en" : "ar";
   const requestedFormat = params.get("format");
   const format: LetterFormat = language !== "en" ? 1 : requestedFormat === "2" ? 2 : requestedFormat === "3" && supportsFormat3(companyId) ? 3 : 1;
@@ -98,7 +98,7 @@ export default function WorkLettersPreview() {
         <Button onClick={() => window.print()}><Printer size={16} /> {english ? "Print / PDF" : "طباعة / PDF"}</Button>
       </div>
     </header>
-    <div className="work-letter-preview-notice"><ArrowLeft size={15} /> {english ? (format === 3 ? "Format 3 is an independent Astar/Master employment and salary letter. QR is included; PDF417 is omitted." : format === 2 ? "Format 2 uses the selected company’s own official paper and styling; Format 1 remains separate." : "Only the official A4 paper is printed; the form and controls are excluded.") : (format === 2 ? "يستخدم التنسيق ٢ ورق الشركة المختارة وتنسيقها المستقل." : "تتم طباعة الورقة الرسمية A4 فقط، ولا يظهر نموذج الإدخال أو أدوات الموقع.")}</div>
+    <div className="work-letter-preview-notice"><ArrowLeft size={15} /> {english ? (format === 3 ? "Format 3 uses the selected company’s own letterhead, accent, spacing, and signature. QR is included; PDF417 is omitted." : format === 2 ? "Format 2 uses the selected company’s own official paper and styling; Format 1 remains separate." : "Only the official A4 paper is printed; the form and controls are excluded.") : (format === 2 ? "يستخدم التنسيق ٢ ورق الشركة المختارة وتنسيقها المستقل." : "تتم طباعة الورقة الرسمية A4 فقط، ولا يظهر نموذج الإدخال أو أدوات الموقع.")}</div>
     <section className="work-letter-preview-stage"><LetterPreview data={{ ...data, companyId }} language={language} format={format} /></section>
   </main>;
 }
