@@ -2152,6 +2152,24 @@
 /* Align the QR block with the fixed 4 × 6 photo area. */
 .document .qr-box {
   top: 46mm;
+  width: 18%;
+}
+/* Enlarge only the upper personal QR and its embedded Yemen emblem. */
+.document .personal-code {
+  width: clamp(112px, 15vw, 140px);
+  height: clamp(112px, 15vw, 140px);
+}
+.document .qr-box .personal-code > svg {
+  width: clamp(100px, 14vw, 130px);
+  height: clamp(100px, 14vw, 130px);
+}
+.document .personal-code img {
+  width: 38%;
+  height: 38%;
+}
+.document .qr-box > span {
+  max-width: 130px;
+  margin-top: 3px;
 }
 /* Fixed crop: preserve the photo box at 4 × 6 cm, remove any frame, and
    crop excess content without stretching the image. */
@@ -2713,53 +2731,6 @@
   line-height: 1;
   text-align: center;
 }
-
-/* Good-conduct certificate footer: slightly larger EN QR with identity beneath it. */
-.document .doc-lower-header {
-  min-height: 15%;
-}
-.document .doc-lower-right {
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 1mm;
-}
-.document .doc-lower-qr {
-  flex: 0 0 auto;
-  width: 30mm;
-  height: 33mm;
-  min-height: 0;
-  grid-template-rows: 30mm auto;
-  justify-items: center;
-  align-content: start;
-  gap: 1mm;
-}
-.document .doc-lower-qr svg {
-  width: 30mm;
-  height: 30mm;
-}
-.document .doc-lower-qr-label {
-  margin-top: 0;
-}
-.document .doc-lower-identity {
-  width: 42mm;
-  max-width: 100%;
-  align-self: center;
-  align-items: center;
-  gap: 2px;
-  padding-top: 0;
-  text-align: center;
-}
-.document .doc-lower-identity .doc-lower-name {
-  white-space: normal;
-  overflow-wrap: anywhere;
-  text-align: center;
-}
-.document .doc-lower-identity .doc-lower-record-number {
-  align-self: center;
-  white-space: nowrap;
-}
-
 /* Independent work-letters workspace */
 .work-letters-app { min-height: 100vh; display: grid; grid-template-columns: 260px minmax(0, 1fr); background: #e8e7e2; color: #26343b; }
 .work-letters-entry { border-color: #b28c35 !important; color: #7b5d1c !important; }

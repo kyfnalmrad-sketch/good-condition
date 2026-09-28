@@ -1308,7 +1308,7 @@ export function DocumentPreview({
             <div className="personal-code" data-qr-value={qrPayloadAr}>
               <QRCodeSVG
                 value={qrPayloadAr}
-                size={112}
+                size={128}
                 level="H"
                 includeMargin
               />
