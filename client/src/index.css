@@ -3545,6 +3545,59 @@
 }
 
 /* Format 3: all active companies get an isolated A4 employment/salary layout on their own letterhead. */
+.work-letter-paper.is-official-paper.is-english:not(.letter-format-2):not(.letter-format-3).company-madar-media {
+  --format1-barcode-left: 15mm;
+  --format1-barcode-right: auto;
+  --format1-barcode-bottom: 48mm;
+}
+.work-letter-paper.is-official-paper.is-english:not(.letter-format-2):not(.letter-format-3).company-riyadah-agri {
+  --format1-barcode-left: auto;
+  --format1-barcode-right: 15mm;
+  --format1-barcode-bottom: 43mm;
+}
+.work-letter-paper.is-official-paper.is-english:not(.letter-format-2):not(.letter-format-3).company-tawasul-engineering {
+  --format1-barcode-left: 15mm;
+  --format1-barcode-right: auto;
+  --format1-barcode-bottom: 50mm;
+}
+
+.work-letter-paper.is-official-paper.is-english:not(.letter-format-2):not(.letter-format-3).company-madar-media .letter-signature {
+  width: 68mm !important;
+  min-width: 0 !important;
+  max-width: 68mm !important;
+  margin-left: auto !important;
+  margin-right: 0 !important;
+  text-align: right !important;
+}
+.work-letter-paper.is-official-paper.is-english:not(.letter-format-2):not(.letter-format-3).company-madar-media .signature-issuer {
+  text-align: right !important;
+}
+
+.work-letter-paper.is-official-paper.is-english:not(.letter-format-2):not(.letter-format-3).company-riyadah-agri .letter-signature {
+  width: 70mm !important;
+  min-width: 0 !important;
+  max-width: 70mm !important;
+  margin-left: 0 !important;
+  margin-right: auto !important;
+  text-align: left !important;
+}
+.work-letter-paper.is-official-paper.is-english:not(.letter-format-2):not(.letter-format-3).company-riyadah-agri .signature-issuer {
+  text-align: left !important;
+}
+
+.work-letter-paper.is-official-paper.is-english:not(.letter-format-2):not(.letter-format-3).company-tawasul-engineering .letter-signature {
+  width: 72mm !important;
+  min-width: 0 !important;
+  max-width: 72mm !important;
+  margin-left: auto !important;
+  margin-right: -8mm !important;
+  text-align: right !important;
+}
+.work-letter-paper.is-official-paper.is-english:not(.letter-format-2):not(.letter-format-3).company-tawasul-engineering .signature-issuer {
+  text-align: right !important;
+}
+
+/* Format 3: all active companies get an isolated A4 employment/salary layout on their own letterhead. */
 .letter-format-selector { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .format3-editable-fields { display: grid; gap: 11px; padding: 14px; border: 1px solid #cdd5df; border-radius: 10px; background: #f8fafc; }
 .format3-editable-fields-title { color: #334155; font-size: 11px; }
