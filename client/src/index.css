@@ -3984,3 +3984,50 @@
     text-align: left !important;
   }
 }
+
+
+/* Print-fit refinement: keep English Format 1 content comfortably inside A4 and clear of the stationery footer. */
+@media print {
+  .work-letter-paper {
+    box-sizing: border-box !important;
+    transform: none !important;
+  }
+
+  .work-letter-paper.is-official-paper.is-english:not(.letter-format-2):not(.letter-format-3) .official-letter-content {
+    left: 15mm !important;
+    right: 15mm !important;
+  }
+
+  .work-letter-paper.is-official-paper.is-english:not(.letter-format-2):not(.letter-format-3) .letter-main {
+    width: 100% !important;
+    max-width: 700px !important;
+  }
+
+  .work-letter-paper.is-official-paper.is-english:not(.letter-format-2):not(.letter-format-3) .letter-signature {
+    transform: translateY(-14mm) !important;
+  }
+
+  .work-letter-paper.is-official-paper.is-english:not(.letter-format-2):not(.letter-format-3).company-tawasul-engineering .letter-signature {
+    margin-right: 8mm !important;
+  }
+}
+
+
+@media print {
+  .work-letter-paper.is-official-paper.is-english:not(.letter-format-2):not(.letter-format-3).company-yemen-colors-travel .letter-signature {
+    margin-right: 15mm !important;
+  }
+}
+
+
+@media print {
+  .work-letter-paper.is-official-paper.is-english:not(.letter-format-2):not(.letter-format-3):is(
+    .company-yemen-colors-travel,
+    .company-asas-sanaa,
+    .company-rawafed-sanaa-agricultural,
+    .company-najm-tech-updated,
+    .company-madar-media
+  ) .letter-signature {
+    margin-right: 15mm !important;
+  }
+}
