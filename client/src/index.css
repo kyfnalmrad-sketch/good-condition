@@ -2830,6 +2830,11 @@
   text-align: center;
   text-rendering: geometricPrecision;
 }
+.document .code-details-ar > span:nth-child(2) {
+  white-space: normal;
+  overflow-wrap: normal;
+  line-break: auto;
+}
 /* Independent work-letters workspace */
 .work-letters-app { min-height: 100vh; display: grid; grid-template-columns: 260px minmax(0, 1fr); background: #e8e7e2; color: #26343b; }
 .work-letters-entry { border-color: #b28c35 !important; color: #7b5d1c !important; }
