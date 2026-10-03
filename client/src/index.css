@@ -2823,8 +2823,12 @@
   display: block;
   max-width: none;
   overflow: visible;
-  font: 700 8px/1.2 Arial, sans-serif;
+  color: #202020;
+  font: 700 8.8px/1.35 Arial, "Noto Sans Arabic", sans-serif;
+  letter-spacing: 0;
   white-space: nowrap;
+  text-align: center;
+  text-rendering: geometricPrecision;
 }
 /* Independent work-letters workspace */
 .work-letters-app { min-height: 100vh; display: grid; grid-template-columns: 260px minmax(0, 1fr); background: #e8e7e2; color: #26343b; }

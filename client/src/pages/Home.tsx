@@ -172,7 +172,7 @@ function makeTransparentPhoto(file: File): Promise<string> {
       const image = new Image();
       image.onerror = () => reject(new Error("photo-decode-failed"));
       image.onload = () => {
-        const scale = Math.min(1, 1200 / Math.max(image.width, image.height));
+        const scale = Math.min(1, 900 / Math.max(image.width, image.height));
         const canvas = document.createElement("canvas");
         canvas.width = Math.max(1, Math.round(image.width * scale));
         canvas.height = Math.max(1, Math.round(image.height * scale));
@@ -230,12 +230,14 @@ function makeTransparentPhoto(file: File): Promise<string> {
           data[index] > 226 && data[index + 1] > 226 && data[index + 2] > 226;
         const matchesEdgeBackground = (index: number) =>
           edgeColors.some(([red, green, blue]) => {
-            const distance = Math.hypot(
-              data[index] - red,
-              data[index + 1] - green,
-              data[index + 2] - blue
-            );
-            return distance < 58;
+            const redDelta = data[index] - red;
+            const greenDelta = data[index + 1] - green;
+            const blueDelta = data[index + 2] - blue;
+            const distanceSquared =
+              redDelta * redDelta +
+              greenDelta * greenDelta +
+              blueDelta * blueDelta;
+            return distanceSquared < 58 * 58;
           });
         const visited = new Uint8Array(width * height);
         const queue: number[] = [];
@@ -281,7 +283,23 @@ function readPhoto(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => reject(new Error("photo-read-failed"));
-    reader.onload = () => resolve(String(reader.result));
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => reject(new Error("photo-decode-failed"));
+      image.onload = () => {
+        const scale = Math.min(1, 1400 / Math.max(image.width, image.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+        const context = canvas.getContext("2d");
+        if (!context) return reject(new Error("canvas-unavailable"));
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = "high";
+        context.drawImage(image, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL("image/jpeg", 0.86));
+      };
+      image.src = String(reader.result);
+    };
     reader.readAsDataURL(file);
   });
 }
@@ -579,8 +597,8 @@ export const initial: FormState = {
   departmentEn: "Testing and Training Department",
   expiryAr: "2026-12-15",
   expiryEn: "2026-12-15",
-  notesAr: "بيانات وهمية لأغراض الاختبار فقط، وليست وثيقة رسمية.",
-  notesEn: "SAMPLE DATA FOR TESTING ONLY - NOT AN OFFICIAL DOCUMENT",
+  notesAr: "تم التحقق من سجلاتنا، ولم يتم العثور على أي سوابق جنائية بحق المذكور.",
+  notesEn: "RECORDS HAVE BEEN VERIFIED AND NO CRIMINAL RECORDS HAVE BEEN FOUND AGAINST THE AFOREMENTIONED",
 };
 
 const SYSTEM_IDENTIFIER_KEYS = [
@@ -636,8 +654,8 @@ function createNewFormData(base: FormState = initial) {
 }
 
 const FIXED_CLOSING_TEXT = {
-  notesAr: initial.notesAr,
-  notesEn: initial.notesEn,
+  notesAr: "تم التحقق من سجلاتنا، ولم يتم العثور على أي سوابق جنائية بحق المذكور.",
+  notesEn: "RECORDS HAVE BEEN VERIFIED AND NO CRIMINAL RECORDS HAVE BEEN FOUND AGAINST THE AFOREMENTIONED",
 };
 
 const FORM_REVIEW_LABELS: Record<keyof FormState, string> = {
@@ -897,34 +915,32 @@ function linkedExpiryDate(issueDate: string) {
 }
 
 const EXCEL_TEMPLATE_ROW = {
-  issueDate: "15/09/2026",
-  fullNameAr: "سامي ناصر علي",
-  fullNameEn: "Sami Nasser Ali",
-  surnameAr: "الاختباري",
-  surnameEn: "Al Ikhtibari",
-  birthDate: "15/09/1990",
-  birthPlaceAr: "اليمن، عدن",
-  birthPlaceEn: "Aden, Yemen",
-  nationalityAr: "اليمن",
-  nationalityEn: "Yemen",
+  issueDate: "",
+  fullNameAr: "",
+  fullNameEn: "",
+  surnameAr: "",
+  surnameEn: "",
+  birthDate: "",
+  birthPlaceAr: "",
+  birthPlaceEn: "",
+  nationalityAr: "",
+  nationalityEn: "",
   idTypeAr: "جواز سفر",
   idTypeEn: "Passport",
-  idNumberAr: "00000000",
-  idNumberEn: "00000000",
-  passportAr: "15/09/2030",
-  passportEn: "15/09/2030",
-  occupationAr: "موظف تجريبي",
-  occupationEn: "Demo Employee",
-  idIssueDateAr: "15/09/2024",
-  idIssueDateEn: "15/09/2024",
-  idIssuePlaceAr: "عدن",
-  idIssuePlaceEn: "Aden",
-  departmentAr: "إدارة الاختبار والتدريب",
-  departmentEn: "Testing and Training Department",
-  expiryAr: "15/12/2026",
-  expiryEn: "15/12/2026",
-  notesAr: "بيانات وهمية لأغراض الاختبار فقط.",
-  notesEn: "SAMPLE DATA FOR TESTING ONLY.",
+  idNumberAr: "",
+  idNumberEn: "",
+  passportAr: "",
+  passportEn: "",
+  occupationAr: "",
+  occupationEn: "",
+  idIssueDateAr: "",
+  idIssueDateEn: "",
+  idIssuePlaceAr: "",
+  idIssuePlaceEn: "",
+  departmentAr: "",
+  departmentEn: "",
+  expiryAr: "",
+  expiryEn: "",
 };
 
 const EXCEL_FIELD_GUIDE = [
@@ -958,8 +974,6 @@ const EXCEL_FIELD_GUIDE = [
   ],
   ["expiryAr", "تاريخ انتهاء الوثيقة", "Document Expiry"],
   ["expiryEn", "تاريخ انتهاء الوثيقة بالإنجليزي", "Document Expiry (English)"],
-  ["notesAr", "الملاحظة", "Notes"],
-  ["notesEn", "الملاحظة بالإنجليزي", "Notes (English)"],
 ] as const;
 
 function downloadExcelTemplate() {
@@ -968,6 +982,8 @@ function downloadExcelTemplate() {
   const instructions = XLSX.utils.aoa_to_sheet([
     ["تعليمات تعبئة قالب حسن السيرة والسلوك"],
     ["اكتب بيانات شخص واحد فقط في الصف الثاني من ورقة Good Conduct."],
+    ["تاريخ الإصدار هنا هو تاريخ إصدار وثيقة حسن السيرة والسلوك، وليس تاريخ إصدار جواز أو بطاقة الشخص."],
+    ["أدخل بيانات الشخص الفعلية في الحقول المطابقة لها. الجملة الخاتمية ثابتة في النظام ولا تُستورد من Excel."],
     ["تواريخ Excel: استخدم DD/MM/YYYY أو YYYY-MM-DD."],
     [
       "الأرقام النظامية (رقم القيد والمرجع والداخلي والإصدار) ينشئها النظام تلقائيًا ولا تُستورد من Excel.",
@@ -1597,16 +1613,20 @@ export default function Home() {
           migrateData(JSON.parse(saved)),
           readStoredRecords()
         );
+        const restoredData =
+          savedClosingTextMode === "custom"
+            ? savedData
+            : { ...savedData, ...FIXED_CLOSING_TEXT };
         setData(
           documentYearLinked
             ? {
-                ...savedData,
-                expiryAr: linkedExpiryDate(savedData.issueDate),
-                expiryEn: linkedExpiryDate(savedData.issueDate),
+                ...restoredData,
+                expiryAr: linkedExpiryDate(restoredData.issueDate),
+                expiryEn: linkedExpiryDate(restoredData.issueDate),
               }
-            : savedData
+            : restoredData
         );
-        setPhotoName(savedPhotoName || savedData.fullNameEn);
+        setPhotoName(savedPhotoName || restoredData.fullNameEn);
       }
       if (savedPhoto) {
         setPhoto(savedPhoto);
