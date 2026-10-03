@@ -468,19 +468,35 @@ function uniqueIdentifier(create: () => string, used: Set<string>) {
   return value;
 }
 
+function uniqueIssueNumber(used: Set<string>) {
+  const namespaceSize = 100_000;
+  const start = Number(randomDigits(5));
+  for (let offset = 0; offset < namespaceSize; offset += 1) {
+    const candidate = String((start + offset) % namespaceSize).padStart(5, "0");
+    if (!used.has(candidate)) {
+      used.add(candidate);
+      return candidate;
+    }
+  }
+  throw new Error("تم استنفاد جميع أرقام القيد ذات الخمسة أرقام");
+}
+
 function generateUniqueIdentifiers(
   name: string,
   surname: string,
-  records: Array<{ data: FormState }>
+  records: Array<{ data: FormState }>,
+  reservedData: FormState[] = []
 ) {
   const used = identifierValues(records);
+  reservedData.forEach(data =>
+    SYSTEM_IDENTIFIER_KEYS.forEach(key => {
+      if (data[key]) used.add(data[key]);
+    })
+  );
   const stamp = new Date().toISOString().slice(0, 10).replaceAll("-", "");
   const initials = referenceInitials(name, surname);
   return {
-    issueNo: uniqueIdentifier(
-      () => `${stamp.slice(0, 4)}${randomDigits(6)}`,
-      used
-    ),
+    issueNo: uniqueIssueNumber(used),
     referenceNo: uniqueIdentifier(
       () => `REF-${initials}-${randomDigits(6)}`,
       used
@@ -583,12 +599,19 @@ function ensureUniqueSystemIdentifiers(
   );
   const isUnissuedSampleNumber =
     data.issueNo === initial.issueNo && !hasSavedSameRecord;
+  const needsFiveDigitIssueNumber =
+    !/^\d{5}$/.test(data.issueNo) && !hasSavedSameRecord;
   const conflictsWithHistory = records.some(
     record =>
       record.id !== data.internalNo &&
       SYSTEM_IDENTIFIER_KEYS.some(key => record.data[key] === data[key])
   );
-  if (!isUnissuedSampleNumber && !conflictsWithHistory) return data;
+  if (
+    !isUnissuedSampleNumber &&
+    !needsFiveDigitIssueNumber &&
+    !conflictsWithHistory
+  )
+    return data;
 
   return {
     ...data,
@@ -606,7 +629,8 @@ function createNewFormData(base: FormState = initial) {
     ...generateUniqueIdentifiers(
       base.fullNameEn || base.fullNameAr,
       base.surnameEn || base.surnameAr,
-      readStoredRecords()
+      readStoredRecords(),
+      [base]
     ),
   };
 }
@@ -1542,7 +1566,7 @@ export default function Home() {
   });
   const [departmentLinked, setDepartmentLinked] = useState(true);
   const [nationalityLinked, setNationalityLinked] = useState(true);
-  const [inputView, setInputView] = useState<"guided" | "full">("guided");
+  const [inputView, setInputView] = useState<"guided" | "full">("full");
   const [editorStep, setEditorStep] = useState<1 | 2 | 3>(1);
   useEffect(() => {
     try {
@@ -1670,7 +1694,8 @@ export default function Home() {
       ...generateUniqueIdentifiers(
         d.fullNameEn || d.fullNameAr,
         d.surnameEn || d.surnameAr,
-        readStoredRecords()
+        readStoredRecords(),
+        [d]
       ),
     }));
     toast.success("تم إنشاء أرقام نظامية جديدة غير مكررة");
@@ -1702,7 +1727,8 @@ export default function Home() {
       const identifiers = generateUniqueIdentifiers(
         String(imported.fullNameEn || imported.fullNameAr || data.fullNameEn),
         String(imported.surnameEn || imported.surnameAr || data.surnameEn),
-        readStoredRecords()
+        readStoredRecords(),
+        [data]
       );
       const closingText =
         closingTextMode === "fixed"
@@ -1873,7 +1899,7 @@ export default function Home() {
     ) as FormState;
     setData({
       ...cleared,
-      ...generateUniqueIdentifiers("", "", readStoredRecords()),
+      ...generateUniqueIdentifiers("", "", readStoredRecords(), [data]),
     });
     setPhoto(defaultPhoto);
     setOriginalPhoto(defaultPhoto);
@@ -1952,10 +1978,11 @@ export default function Home() {
       ...generateUniqueIdentifiers(
         current.fullNameEn || current.fullNameAr,
         current.surnameEn || current.surnameAr,
-        readStoredRecords()
+        readStoredRecords(),
+        [current]
       ),
     }));
-    setInputView("guided");
+    setInputView("full");
     setEditorStep(1);
     setGenerated(false);
   };
@@ -1983,18 +2010,17 @@ export default function Home() {
             <em>راجع الناتج.</em>
           </h2>
           <p>
-            الورقة الرسمية هي القالب الأساسي. الحقول أدناه تغيّر البيانات
-            المتغيرة فقط داخل نفس التصميم.
+            صفحة واحدة مرتبة: بيانات الإصدار أولًا، ثم الاسم بالعربية والإنجليزية
+            وتاريخ الميلاد وبقية البيانات.
           </p>
         </div>
         <div
           className="input-mode-switch"
-          role="tablist"
-          aria-label="طريقة الإدخال"
+          role="group"
+          aria-label="إجراءات الإدخال"
         >
           <button
             type="button"
-            className={inputView === "guided" ? "active" : ""}
             onClick={startNewIssuance}
           >
             إصدار جديد
@@ -2004,7 +2030,7 @@ export default function Home() {
             className={inputView === "full" ? "active" : ""}
             onClick={() => setInputView("full")}
           >
-            الإدخال الكامل
+            صفحة الإدخال الواحدة
           </button>
         </div>
         {inputView === "guided" && (
@@ -2183,6 +2209,11 @@ export default function Home() {
                 "surnameEn"
               )}
             />
+            <DateField
+              label="تاريخ الميلاد / Date of Birth"
+              value={data.birthDate}
+              onChange={update("birthDate")}
+            />
             <TextPairField
               label="مكان الميلاد / Birth Place"
               arabicValue={data.birthPlaceAr}
@@ -2191,15 +2222,7 @@ export default function Home() {
               onToggle={() =>
                 setLinkedTextFields(d => ({ ...d, birthPlace: !d.birthPlace }))
               }
-              onChange={updateLinkedText(
-                "birthPlaceAr",
-                "birthPlaceEn"
-              )}
-            />
-            <DateField
-              label="تاريخ الميلاد / Date of Birth"
-              value={data.birthDate}
-              onChange={update("birthDate")}
+              onChange={updateLinkedText("birthPlaceAr", "birthPlaceEn")}
             />
             <DatePairField
               label={"تاريخ الانتهاء / Date of Expiry"}

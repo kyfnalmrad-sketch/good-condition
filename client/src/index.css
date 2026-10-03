@@ -1363,8 +1363,19 @@
 .editor-page .control-panel {
   width: min(100%, 900px);
   min-height: 100vh;
+  height: auto;
+  max-height: none;
+  overflow: visible;
   margin: 0 auto;
   border-right: 0;
+}
+.editor-page .actions {
+  position: static;
+  flex-wrap: wrap;
+  background: transparent;
+}
+.editor-page .actions button {
+  flex: 1 1 110px;
 }
 .editor-page .preview-panel {
   display: none;
@@ -2169,7 +2180,7 @@
   height: 38%;
 }
 .document .qr-box > span {
-  /* Enlarge only the name; keep it on one line inside the isolated QR block. */
+  /* Keep the name slightly smaller and on one line inside the isolated QR block. */
   max-width: 130px;
   margin-top: 3px;
 }
@@ -2798,7 +2809,7 @@
   width: 37mm;
   max-width: none;
   overflow: visible;
-  font-size: 15px;
+  font-size: 13px;
   line-height: 1.1;
   text-align: center;
   white-space: nowrap;
