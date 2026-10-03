@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Check, Copy, Database, FileDown, Languages, List, Save } from "lucide-react";
+import { Check, Copy, Database, FileDown, Languages, List, Mail, MapPin, Phone, Save } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import bwipjs from "@bwip-js/browser";
 import { Button } from "@/components/ui/button";
@@ -124,6 +124,40 @@ function codePayload(data: WorkLetterData, language: Language) {
 function brandColor(companyId: string) { return ({ astar: "8b3f35", master: "17375e", "horizon-sanaa": "0b567a", "yemen-colors-travel": "0e858d", "asas-sanaa": "a47a25", "yemen-paths-logistics": "176ba6", "rawafed-sanaa-agricultural": "3f6f56", "al-hasani-exchange": "123d6b", "najm-tech-updated": "2d6ca8", "safa-pharma": "1478ad", "madar-media": "8f285f", "riyadah-agri": "7a9940", "tawasul-engineering": "168c88" } as Record<string, string>)[companyId] ?? "203f5c"; }
 function barcodeSvg(data: WorkLetterData, companyId: string) { const payload = [`${data.reference}`, `${data.internalNo}`, `${data.issueDate}`].join("\n"); try { return bwipjs.toSVG({ bcid: "pdf417", text: payload, barcolor: brandColor(companyId), scale: 1, columns: 6, rows: 4, includetext: false, paddingwidth: 1, paddingheight: 1 } as any); } catch { return ""; } }
 
+function OfficialPaperFooter({ companyId, paperAsset }: { companyId: string; paperAsset: string }) {
+  if (companyId !== "tawasul-engineering") {
+    return <div className="official-paper-footer official-paper-footer--zoom" style={{ backgroundImage: `url("${paperAsset}")` }} aria-hidden="true" />;
+  }
+
+  return <div className="official-paper-footer official-paper-footer--tawasul" aria-label="Tawasul Engineering contact details">
+    <div className="official-paper-footer__contacts">
+      <div className="official-paper-footer__item official-paper-footer__item--address">
+        <MapPin aria-hidden="true" />
+        <div className="official-paper-footer__copy">
+          <span className="official-paper-footer__label">Address <b>/ العنوان</b></span>
+          <span dir="ltr">Sana&apos;a, Al-Zubairi Street, Tower 9</span>
+          <span dir="rtl" lang="ar">صنعاء، شارع الزبيري، برج 9</span>
+        </div>
+      </div>
+      <div className="official-paper-footer__item official-paper-footer__item--phone">
+        <Phone aria-hidden="true" />
+        <div className="official-paper-footer__copy">
+          <span className="official-paper-footer__label">Phone <b>/ الهاتف</b></span>
+          <span dir="ltr">+967 71 456 7812</span>
+        </div>
+      </div>
+      <div className="official-paper-footer__item official-paper-footer__item--email">
+        <Mail aria-hidden="true" />
+        <div className="official-paper-footer__copy">
+          <span className="official-paper-footer__label">Email <b>/ البريد الإلكتروني</b></span>
+          <span dir="ltr">tawasulengineering@gmail.com</span>
+        </div>
+      </div>
+    </div>
+    <div className="official-paper-footer__brand-band" aria-hidden="true" />
+  </div>;
+}
+
 export function LetterPreview({ data, language, format = 1 }: { data: WorkLetterData; language: Language; format?: LetterFormat }) {
   const company = companyFor(data.companyId);
   const issuerName = data.issuerName || (language === "ar" ? "أحمد محمد، مدير الموارد البشرية" : "Ahmed Mohammed, Human Resources Manager");
@@ -153,6 +187,7 @@ export function LetterPreview({ data, language, format = 1 }: { data: WorkLetter
   const joiningYear = data.joiningDate.split("/").pop() || "2019";
   if (formatThree) return <article className={`work-letter-paper company-${company.id} layout-${letterLayout(company.id)} letter-format-3 is-english`} dir="ltr">
     <img className="company-official-paper" src={paperAsset} alt="" />
+    <OfficialPaperFooter companyId={company.id} paperAsset={paperAsset} />
     <div className="official-letter-content"><div className="format3-letter-body">
       <div className="format3-qr" aria-label="Employment letter QR code"><QRCodeSVG value={format3Qr} size={82} level="L" boostLevel={false} fgColor={`#${brandColor(company.id)}`} /></div>
       <h1>{format3Recipient || "TO WHOM IT MAY CONCERN"}</h1>
@@ -168,6 +203,7 @@ export function LetterPreview({ data, language, format = 1 }: { data: WorkLetter
   </article>;
   return <article className={`work-letter-paper company-${company.id} layout-${letterLayout(company.id)} ${formatTwo ? "letter-format-2" : "is-official-paper"} ${english ? "is-english" : "is-arabic"}`} dir={english ? "ltr" : "rtl"}>
     <img className="company-official-paper" src={paperAsset} alt="" />
+    <OfficialPaperFooter companyId={company.id} paperAsset={paperAsset} />
     <div className="official-letter-content">{formatTwo ? <div className="format2-letter-body"><div className="format2-qr" aria-label="Document QR code"><QRCodeSVG value={qr} size={86} level="L" boostLevel={false} fgColor="#111111" /></div>{(data.recipient.trim() || data.attention.trim()) && <p>{data.recipient.trim() && <><strong>To:</strong> {data.recipient}</>}{data.attention.trim() && <><br /><strong>Attn.:</strong> {data.attention}</>}</p>}<p><strong>Date:</strong> {data.issueDate}</p>{data.subject.trim() && <p className="format2-subject"><strong>Sub.:</strong> {data.subject}</p>}<p>This letter is to confirm that Mr. <strong>{data.employeeName}</strong>{passport.trim() ? <>, holding Passport No. (<strong>{passport}</strong>),</> : null} is under our employment as a <strong>{data.jobTitle}</strong> since {joiningYear} in a full time position, receives a monthly salary of <strong>$ {numericSalary(data.salary)}</strong>.</p><p>Due to the constant health concern, Mr. <strong>{data.employeeName}</strong> decided to travel abroad for further treatment in the Republic of Turkey. We, as the employer, are fully supporting Mr. {data.employeeName}'s decision to allow him to receive the necessary health care.</p><p>We also confirm that his position will remain guaranteed during his temporary medical leave.</p><p>Therefore, you are kindly requested to issue an entry visa to allow him to receive the necessary medical treatment.<br />For further information, please contact us.</p><p className="format2-regards">Best regards</p><div className="format2-signature"><div className="format2-signature-space"><span className="format2-signature-line" aria-hidden="true" /></div><strong>{format2SignatureCompanyName(company)}</strong>{data.format2SignatoryName.trim() && <span className="format2-signature-issuer">{data.format2SignatoryName}</span>}{data.format2SignatoryTitle.trim() && <span className="format2-signature-title">{data.format2SignatoryTitle}</span>}</div></div> : <><div className="letter-meta"><div><span>{english ? "Internal No." : "الرقم الداخلي"}</span><b className="letter-keep letter-ltr" dir="ltr">{compactDocumentNumber(data.internalNo)}</b></div><div><span>{english ? "Reference" : "المرجع"}</span><b className="letter-keep letter-ltr" dir="ltr">{compactDocumentNumber(data.reference)}</b></div><div><span>{english ? "Date" : "التاريخ"}</span><b className="letter-keep letter-ltr" dir="ltr">{english ? dateForEnglish(data.issueDate) : arabicDate(data.issueDate)}</b></div></div>
       <div className="letter-main"><div className="letter-qr" aria-label={english ? "Document QR code" : "رمز QR للوثيقة"}><QRCodeSVG value={qr} size={92} level="L" boostLevel={false} fgColor="#111111" /></div><h1>{english ? "To Whom It May Concern" : "إلى من يهمه الأمر"}</h1>
         {english ? <p className="letter-copy">{company.nameEn} presents its compliments and confirms that the company is duly engaged in <strong>{businessStatement(company, "en")}</strong>. This is to certify that <strong className="letter-keep">{data.employeeName}</strong> is employed by our company as <strong className="letter-keep">{data.jobTitle}</strong>, <span className="letter-pair">with a monthly salary of <strong className="letter-keep letter-ltr" dir="ltr">{salaryForEnglish(data.salary, data.salaryWords)}</strong></span>; <span className="letter-pair">place of birth: <strong className="letter-keep">{data.birthPlace}</strong></span>; <span className="letter-pair">date of birth: <strong className="letter-keep letter-ltr" dir="ltr">{dateForEnglish(data.birthDate)}</strong></span>; <span className="letter-pair">date of joining: <strong className="letter-keep letter-ltr" dir="ltr">{dateForEnglish(data.joiningDate)}</strong></span>{optionalEnglish}. This certificate is issued at his request for official purposes, without any responsibility or obligation on the company beyond the information stated herein.</p> : <p className="letter-copy">تهديكم <strong className="letter-keep">{company.nameAr}</strong> أطيب تحياتها، ونفيدكم بأن الشركة تعمل بصورة نظامية في مجال <strong>{businessStatement(company, "ar")}</strong>، كما نفيدكم بأن الأخ <strong className="letter-keep">{data.employeeName}</strong> يعمل لدى شركتنا بوظيفة <strong className="letter-keep">{data.jobTitle}</strong>، <span className="letter-pair">ويتقاضى راتباً شهرياً قدره <strong className="letter-keep letter-ltr" dir="ltr">{salaryForArabic(data.salary, data.salaryWords)}</strong></span>، وقد التحق بالعمل لدينا <span className="letter-pair">بتاريخ <strong className="letter-keep letter-ltr" dir="ltr">{arabicDate(data.joiningDate)}</strong></span>، <span className="letter-pair">ومكان ميلاده <strong className="letter-keep">{data.birthPlace}</strong></span>، <span className="letter-pair">وتاريخ ميلاده <strong className="letter-keep letter-ltr" dir="ltr">{arabicDate(data.birthDate)}</strong></span>{optionalArabic}. وقد أُصدرت له هذه الإفادة بناءً على طلبه وللأغراض الرسمية، دون أدنى مسؤولية أو التزام على الشركة تجاه أي طرف آخر، في حدود صحة البيانات الواردة فيها.</p>}

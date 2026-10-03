@@ -4031,3 +4031,116 @@
     margin-right: 15mm !important;
   }
 }
+
+
+/* Enlarge official stationery footers without scaling the letterhead or watermark. */
+.official-paper-footer {
+  position: absolute;
+  z-index: 1;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 43mm;
+  box-sizing: border-box;
+  pointer-events: none;
+}
+
+.official-paper-footer--zoom {
+  background-color: #fff;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-size: 100% 746%;
+}
+
+/* Match Astar's nearly full-width footer footprint on templates with wider side gutters. */
+.company-al-hasani-exchange .official-paper-footer--zoom,
+.company-asas-sanaa .official-paper-footer--zoom,
+.company-yemen-colors-travel .official-paper-footer--zoom,
+.company-yemen-paths-logistics .official-paper-footer--zoom {
+  background-size: 108% 746%;
+}
+
+.official-paper-footer--tawasul {
+  display: flex;
+  align-items: center;
+  padding: 3mm 12mm 9mm;
+  border-top: 0.45mm solid #7d878b;
+  background: #fff;
+  color: #34434a;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.official-paper-footer__contacts {
+  display: grid;
+  grid-template-columns: 1.25fr 0.78fr 1.42fr;
+  align-items: center;
+  gap: 3mm;
+  width: 100%;
+}
+
+.official-paper-footer__item {
+  display: grid;
+  grid-template-columns: 5mm minmax(0, 1fr);
+  align-items: center;
+  gap: 2.4mm;
+  min-width: 0;
+  min-height: 19mm;
+}
+
+.official-paper-footer__item + .official-paper-footer__item {
+  padding-left: 3mm;
+  border-left: 0.25mm solid #c9d0d3;
+}
+
+.official-paper-footer__item svg {
+  width: 5mm;
+  height: 5mm;
+  color: #168c88;
+  stroke-width: 2.1;
+}
+
+.official-paper-footer__item--phone svg {
+  color: #d59b36;
+}
+
+.official-paper-footer__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7mm;
+  min-width: 0;
+  font-size: 8.2pt;
+  line-height: 1.18;
+}
+
+.official-paper-footer__label {
+  margin-bottom: 0.6mm;
+  color: #168c88;
+  font-size: 7.2pt;
+  font-weight: 700;
+}
+
+.official-paper-footer__label b {
+  font-weight: 600;
+}
+
+.official-paper-footer__item--phone .official-paper-footer__copy > span:last-child {
+  font-size: 10pt;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.official-paper-footer__item--email .official-paper-footer__copy > span:last-child {
+  font-size: 8pt;
+  white-space: nowrap;
+}
+
+.official-paper-footer__brand-band {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 7mm;
+  border-top: 0.6mm solid #fff;
+  background: linear-gradient(90deg, #168c88 0 43%, #d59b36 43% 48%, #4d5a60 48% 100%);
+}
