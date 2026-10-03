@@ -2149,10 +2149,11 @@
   height: auto;
   overflow: visible;
 }
-/* Align the QR block with the fixed 4 × 6 photo area. */
+/* The QR block is absolutely positioned, so larger text cannot reflow the table. */
 .document .qr-box {
   top: 46mm;
   width: 18%;
+  overflow: visible;
 }
 /* Enlarge only the upper personal QR and its embedded Yemen emblem. */
 .document .personal-code {
@@ -2168,6 +2169,7 @@
   height: 38%;
 }
 .document .qr-box > span {
+  /* Enlarge only the name; keep it on one line inside the isolated QR block. */
   max-width: 130px;
   margin-top: 3px;
 }
@@ -2796,6 +2798,8 @@
   width: 37mm;
   max-width: none;
   overflow: visible;
+  font-size: 15px;
+  line-height: 1.1;
   text-align: center;
   white-space: nowrap;
 }
@@ -2808,7 +2812,7 @@
   display: block;
   max-width: none;
   overflow: visible;
-  font: 700 6px/1.2 Arial, sans-serif;
+  font: 700 8px/1.2 Arial, sans-serif;
   white-space: nowrap;
 }
 /* Independent work-letters workspace */

@@ -30,6 +30,7 @@ const defaultWatermarkPhoto = "/assets/training-photo-watermark-duotone.svg";
 const savedPhotoNameKey = "good-conduct-photo-name";
 const watermarkLinkedKey = "good-conduct-watermark-linked";
 const linkedWatermarkPhotoKey = "good-conduct-linked-watermark-photo";
+const documentExpiryLinkKey = "good-conduct-document-expiry-linked";
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const DOCUMENT_TYPE_OPTIONS = [
   { ar: "جواز سفر", en: "Passport" },
@@ -67,6 +68,100 @@ function cleanEnglish(value: string) {
     .replace(/[^\x20-\x7E]/g, " ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+const BILINGUAL_WORDS: Array<[string, string]> = [
+  ["Aden", "عدن"],
+  ["Yemen", "اليمن"],
+  ["Sana'a", "صنعاء"],
+  ["Sanaa", "صنعاء"],
+  ["Taiz", "تعز"],
+  ["Hodeidah", "الحديدة"],
+  ["Ibb", "إب"],
+  ["Mukalla", "المكلا"],
+  ["Saudi Arabia", "السعودية"],
+  ["Oman", "عُمان"],
+  ["Egypt", "مصر"],
+  ["Teacher", "معلم"],
+  ["Engineer", "مهندس"],
+  ["Doctor", "طبيب"],
+  ["Accountant", "محاسب"],
+  ["Manager", "مدير"],
+  ["Driver", "سائق"],
+  ["Employee", "موظف"],
+  ["Student", "طالب"],
+  ["Supervisor", "مشرف"],
+  ["Technician", "فني"],
+  ["Officer", "ضابط"],
+  ["Sami", "سامي"],
+  ["Nasser", "ناصر"],
+  ["Ali", "علي"],
+  ["Mohammed", "محمد"],
+  ["Ahmad", "أحمد"],
+  ["Abdullah", "عبدالله"],
+  ["Aden, Yemen", "عدن، اليمن"],
+  ["Yemen, Aden", "اليمن، عدن"],
+];
+
+const ENGLISH_TO_ARABIC_LETTERS: Record<string, string> = {
+  a: "ا", b: "ب", c: "ك", d: "د", e: "ي", f: "ف", g: "ج", h: "ه",
+  i: "ي", j: "ج", k: "ك", l: "ل", m: "م", n: "ن", o: "و", p: "ب",
+  q: "ق", r: "ر", s: "س", t: "ت", u: "و", v: "ف", w: "و", x: "كس",
+  y: "ي", z: "ز",
+};
+const ARABIC_TO_ENGLISH_LETTERS: Record<string, string> = {
+  ا: "a", أ: "a", إ: "i", آ: "a", ب: "b", ت: "t", ث: "th", ج: "j",
+  ح: "h", خ: "kh", د: "d", ذ: "dh", ر: "r", ز: "z", س: "s", ش: "sh",
+  ص: "s", ض: "d", ط: "t", ظ: "z", ع: "a", غ: "gh", ف: "f", ق: "q",
+  ك: "k", ل: "l", م: "m", ن: "n", ه: "h", ة: "a", و: "w", ي: "y",
+  ى: "a", ء: "",
+};
+
+function transliterate(value: string, target: "ar" | "en") {
+  if (target === "en")
+    return Array.from(value, character =>
+      ARABIC_TO_ENGLISH_LETTERS[character] ?? character
+    ).join("");
+
+  const text = value.toLocaleLowerCase("en");
+  const digraphs: Array<[string, string]> = [
+    ["sh", "ش"], ["th", "ث"], ["kh", "خ"], ["gh", "غ"], ["dh", "ذ"],
+    ["ch", "تش"], ["ph", "ف"], ["oo", "و"], ["ee", "ي"], ["ou", "و"],
+  ];
+  let result = "";
+  for (let index = 0; index < text.length; ) {
+    const digraph = digraphs.find(([letters]) => text.startsWith(letters, index));
+    if (digraph) {
+      result += digraph[1];
+      index += digraph[0].length;
+    } else {
+      result += ENGLISH_TO_ARABIC_LETTERS[text[index]] ?? text[index];
+      index += 1;
+    }
+  }
+  return result;
+}
+
+function translateBilingualText(value: string, target: "ar" | "en") {
+  const sourceLanguage = target === "ar" ? "en" : "ar";
+  const hasSourceScript =
+    sourceLanguage === "ar"
+      ? /[\u0600-\u06ff]/.test(value)
+      : /[A-Za-z]/.test(value);
+  if (!hasSourceScript) return value;
+
+  const exact = BILINGUAL_WORDS.find(([english, arabic]) =>
+    normalizeLookup(target === "ar" ? english : arabic) === normalizeLookup(value)
+  );
+  if (exact) return target === "ar" ? exact[1] : exact[0];
+
+  return value.replace(/[A-Za-z\u0600-\u06ff]+/g, token => {
+    const known = BILINGUAL_WORDS.find(([english, arabic]) =>
+      normalizeLookup(target === "ar" ? english : arabic) ===
+      normalizeLookup(token)
+    );
+    return known ? (target === "ar" ? known[1] : known[0]) : transliterate(token, target);
+  });
 }
 
 function makeTransparentPhoto(file: File): Promise<string> {
@@ -270,12 +365,15 @@ function findBilingualOption(
   );
 }
 
-function addYears(value: string, years: number) {
+function addMonths(value: string, months: number) {
   const normalized = toInputDate(value);
   if (!normalized) return "";
   const [year, month, day] = normalized.split("-").map(Number);
-  const date = new Date(Date.UTC(year, month - 1, day));
-  date.setUTCFullYear(date.getUTCFullYear() + years);
+  const date = new Date(Date.UTC(year, month - 1 + months, 1));
+  const lastDay = new Date(
+    Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0)
+  ).getUTCDate();
+  date.setUTCDate(Math.min(day, lastDay));
   return [
     date.getUTCFullYear(),
     String(date.getUTCMonth() + 1).padStart(2, "0"),
@@ -463,11 +561,56 @@ export const initial: FormState = {
   idIssuePlaceEn: "Aden",
   departmentAr: "إدارة الاختبار والتدريب",
   departmentEn: "Testing and Training Department",
-  expiryAr: "2030-09-15",
-  expiryEn: "2030-09-15",
+  expiryAr: "2026-12-15",
+  expiryEn: "2026-12-15",
   notesAr: "بيانات وهمية لأغراض الاختبار فقط، وليست وثيقة رسمية.",
   notesEn: "SAMPLE DATA FOR TESTING ONLY - NOT AN OFFICIAL DOCUMENT",
 };
+
+const SYSTEM_IDENTIFIER_KEYS = [
+  "issueNo",
+  "referenceNo",
+  "internalNo",
+  "issuanceNo",
+] as const;
+
+function ensureUniqueSystemIdentifiers(
+  data: FormState,
+  records: Array<{ id: string; data: FormState }>
+) {
+  const hasSavedSameRecord = records.some(
+    record => record.id === data.internalNo && record.data.issueNo === data.issueNo
+  );
+  const isUnissuedSampleNumber =
+    data.issueNo === initial.issueNo && !hasSavedSameRecord;
+  const conflictsWithHistory = records.some(
+    record =>
+      record.id !== data.internalNo &&
+      SYSTEM_IDENTIFIER_KEYS.some(key => record.data[key] === data[key])
+  );
+  if (!isUnissuedSampleNumber && !conflictsWithHistory) return data;
+
+  return {
+    ...data,
+    ...generateUniqueIdentifiers(
+      data.fullNameEn || data.fullNameAr,
+      data.surnameEn || data.surnameAr,
+      records
+    ),
+  };
+}
+
+function createNewFormData(base: FormState = initial) {
+  return {
+    ...base,
+    ...generateUniqueIdentifiers(
+      base.fullNameEn || base.fullNameAr,
+      base.surnameEn || base.surnameAr,
+      readStoredRecords()
+    ),
+  };
+}
+
 const FIXED_CLOSING_TEXT = {
   notesAr: initial.notesAr,
   notesEn: initial.notesEn,
@@ -726,7 +869,7 @@ function excelRowToForm(row: Record<string, unknown>) {
 }
 
 function linkedExpiryDate(issueDate: string) {
-  return addYears(issueDate, 1) || issueDate;
+  return addMonths(issueDate, 3) || issueDate;
 }
 
 const EXCEL_TEMPLATE_ROW = {
@@ -754,8 +897,8 @@ const EXCEL_TEMPLATE_ROW = {
   idIssuePlaceEn: "Aden",
   departmentAr: "إدارة الاختبار والتدريب",
   departmentEn: "Testing and Training Department",
-  expiryAr: "15/09/2030",
-  expiryEn: "15/09/2030",
+  expiryAr: "15/12/2026",
+  expiryEn: "15/12/2026",
   notesAr: "بيانات وهمية لأغراض الاختبار فقط.",
   notesEn: "SAMPLE DATA FOR TESTING ONLY.",
 };
@@ -963,6 +1106,7 @@ function TextPairField({
   englishValue,
   linked,
   onToggle,
+  translateOnLink = true,
   onChange,
 }: {
   label: string;
@@ -970,11 +1114,18 @@ function TextPairField({
   englishValue: string;
   linked: boolean;
   onToggle: () => void;
+  translateOnLink?: boolean;
   onChange: (side: "ar" | "en", value: string) => void;
 }) {
   const change = (side: "ar" | "en", value: string) => {
     onChange(side, value);
-    if (linked) onChange(side === "ar" ? "en" : "ar", value);
+    if (linked)
+      onChange(
+        side === "ar" ? "en" : "ar",
+        translateOnLink
+          ? translateBilingualText(value, side === "ar" ? "en" : "ar")
+          : value
+      );
   };
   return (
     <div className="date-pair-field text-pair-field">
@@ -995,6 +1146,7 @@ function TextPairField({
           <label>العربي</label>
           <Input
             dir="rtl"
+            lang="ar"
             value={arabicValue}
             onChange={e => change("ar", e.target.value)}
           />
@@ -1003,6 +1155,7 @@ function TextPairField({
           <label>English</label>
           <Input
             dir="ltr"
+            lang="en"
             value={englishValue}
             onChange={e => change("en", e.target.value)}
           />
@@ -1053,8 +1206,10 @@ function BilingualChoiceField({
       );
     } else if (linked) {
       onChange({
-        [`${field}Ar`]: value,
-        [`${field}En`]: value,
+        [`${field}Ar`]:
+          side === "ar" ? value : translateBilingualText(value, "ar"),
+        [`${field}En`]:
+          side === "en" ? value : translateBilingualText(value, "en"),
       });
     } else {
       onChange({ [key]: value });
@@ -1080,6 +1235,7 @@ function BilingualChoiceField({
         <Input
           list={listId}
           dir="rtl"
+          lang="ar"
           aria-label={`${label} بالعربي`}
           value={arabicValue}
           onChange={e => applyValue("ar", e.target.value)}
@@ -1088,6 +1244,7 @@ function BilingualChoiceField({
         <Input
           list={listId}
           dir="ltr"
+          lang="en"
           aria-label={`${label} بالإنجليزية`}
           value={englishValue}
           onChange={e => applyValue("en", e.target.value)}
@@ -1251,6 +1408,7 @@ export function DocumentPreview({
               <span className="passport-number">
                 رقم الجواز: {toArabicDigits(data.idNumberAr)}
               </span>
+              <span>تاريخ الميلاد: {formatArabicDate(data.birthDate)}</span>
               <span>مكان الميلاد: {data.birthPlaceAr}</span>
             </div>
           </div>
@@ -1344,7 +1502,7 @@ export function DocumentPreview({
 
 export default function Home() {
   const [, setLocation] = useLocation();
-  const [data, setData] = useState(initial);
+  const [data, setData] = useState<FormState>(() => createNewFormData());
   const [photo, setPhoto] = useState(defaultPhoto);
   const [originalPhoto, setOriginalPhoto] = useState(defaultPhoto);
   const [photoName, setPhotoName] = useState(initial.fullNameEn);
@@ -1362,7 +1520,13 @@ export default function Home() {
   >([]);
   const [generated, setGenerated] = useState(false);
   const [draftSaved, setDraftSaved] = useState(false);
-  const [documentYearLinked, setDocumentYearLinked] = useState(true);
+  const [documentYearLinked, setDocumentYearLinked] = useState(() => {
+    try {
+      return localStorage.getItem(documentExpiryLinkKey) !== "false";
+    } catch {
+      return true;
+    }
+  });
   const [idNumberLinked, setIdNumberLinked] = useState(true);
   const [linkedTextFields, setLinkedTextFields] = useState({
     fullName: true,
@@ -1405,8 +1569,19 @@ export default function Home() {
         "good-conduct-custom-destinations"
       );
       if (saved) {
-        const savedData = migrateData(JSON.parse(saved));
-        setData(savedData);
+        const savedData = ensureUniqueSystemIdentifiers(
+          migrateData(JSON.parse(saved)),
+          readStoredRecords()
+        );
+        setData(
+          documentYearLinked
+            ? {
+                ...savedData,
+                expiryAr: linkedExpiryDate(savedData.issueDate),
+                expiryEn: linkedExpiryDate(savedData.issueDate),
+              }
+            : savedData
+        );
         setPhotoName(savedPhotoName || savedData.fullNameEn);
       }
       if (savedPhoto) {
@@ -1436,6 +1611,9 @@ export default function Home() {
       /* keep defaults */
     }
   }, []);
+  useEffect(() => {
+    localStorage.setItem(documentExpiryLinkKey, String(documentYearLinked));
+  }, [documentYearLinked]);
   useEffect(() => {
     const timer = window.setTimeout(() => {
       try {
@@ -1563,12 +1741,10 @@ export default function Home() {
     );
   };
   const updateLinkedText =
-    (arKey: keyof FormState, enKey: keyof FormState, linked: boolean) =>
+    (arKey: keyof FormState, enKey: keyof FormState) =>
     (side: "ar" | "en", value: string) => {
       setData(d =>
-        linked
-          ? { ...d, [arKey]: value, [enKey]: value }
-          : { ...d, [side === "ar" ? arKey : enKey]: value }
+        ({ ...d, [side === "ar" ? arKey : enKey]: value })
       );
     };
   const toggleIdNumberLink = () => {
@@ -1596,20 +1772,12 @@ export default function Home() {
     );
   };
   const updateExpiryDate = (side: "ar" | "en", value: string) => {
-    setData(d => {
-      const next = {
-        ...d,
-        [side === "ar" ? "expiryAr" : "expiryEn"]: value,
-      };
-      if (!documentYearLinked) return next;
-      const issueDate = addYears(value, -1) || d.issueDate;
-      return {
-        ...next,
-        issueDate,
-        expiryAr: linkedExpiryDate(issueDate),
-        expiryEn: linkedExpiryDate(issueDate),
-      };
-    });
+    if (documentYearLinked) {
+      setDocumentYearLinked(false);
+      setData(d => ({ ...d, expiryAr: value, expiryEn: value }));
+      return;
+    }
+    setData(d => ({ ...d, [side === "ar" ? "expiryAr" : "expiryEn"]: value }));
   };
   const toggleDocumentYearLink = () => {
     setDocumentYearLinked(linked => {
@@ -1681,10 +1849,12 @@ export default function Home() {
       return;
     }
     const records = readStoredRecords();
+    const recordData = ensureUniqueSystemIdentifiers(data, records);
+    if (recordData !== data) setData(recordData);
     const record = {
-      id: data.internalNo || `${data.issueNo}-${Date.now()}`,
+      id: recordData.internalNo || `${recordData.issueNo}-${Date.now()}`,
       savedAt: new Date().toISOString(),
-      data,
+      data: recordData,
       photo,
       watermarkPhoto,
     };
@@ -1701,7 +1871,10 @@ export default function Home() {
     const cleared = Object.fromEntries(
       Object.keys(initial).map(key => [key, ""])
     ) as FormState;
-    setData(cleared);
+    setData({
+      ...cleared,
+      ...generateUniqueIdentifiers("", "", readStoredRecords()),
+    });
     setPhoto(defaultPhoto);
     setOriginalPhoto(defaultPhoto);
     setPhotoName(initial.fullNameEn);
@@ -1726,17 +1899,19 @@ export default function Home() {
       toast.error("أدخل رقم القيد واسم صاحب الطلب أولًا");
       return;
     }
-    localStorage.setItem("good-conduct-form-data", JSON.stringify(data));
+    const records = readStoredRecords();
+    const recordData = ensureUniqueSystemIdentifiers(data, records);
+    if (recordData !== data) setData(recordData);
+    localStorage.setItem("good-conduct-form-data", JSON.stringify(recordData));
     localStorage.setItem("good-conduct-form-photo", photo);
     localStorage.setItem(savedPhotoNameKey, photoName);
     localStorage.setItem("good-conduct-watermark-photo", watermarkPhoto);
     localStorage.setItem(linkedWatermarkPhotoKey, linkedWatermarkPhoto);
     localStorage.setItem(watermarkLinkedKey, String(watermarkLinked));
-    const records = readStoredRecords();
     const record = {
-      id: data.internalNo || `${data.issueNo}-${Date.now()}`,
+      id: recordData.internalNo || `${recordData.issueNo}-${Date.now()}`,
       savedAt: new Date().toISOString(),
-      data,
+      data: recordData,
       photo,
       watermarkPhoto,
     };
@@ -1753,7 +1928,7 @@ export default function Home() {
     setLocation("/preview");
   };
   const reset = () => {
-    setData(initial);
+    setData(createNewFormData());
     setPhoto(defaultPhoto);
     setOriginalPhoto(defaultPhoto);
     setPhotoName(initial.fullNameEn);
@@ -1770,6 +1945,19 @@ export default function Home() {
     setGenerated(false);
     setDraftSaved(false);
     toast.info("تمت استعادة البيانات التجريبية");
+  };
+  const startNewIssuance = () => {
+    setData(current => ({
+      ...current,
+      ...generateUniqueIdentifiers(
+        current.fullNameEn || current.fullNameAr,
+        current.surnameEn || current.surnameAr,
+        readStoredRecords()
+      ),
+    }));
+    setInputView("guided");
+    setEditorStep(1);
+    setGenerated(false);
   };
   return (
     <main
@@ -1807,7 +1995,7 @@ export default function Home() {
           <button
             type="button"
             className={inputView === "guided" ? "active" : ""}
-            onClick={() => setInputView("guided")}
+            onClick={startNewIssuance}
           >
             إصدار جديد
           </button>
@@ -1843,50 +2031,39 @@ export default function Home() {
             </div>
           </div>
           <div className="form-grid">
+            <div className="field-with-action">
+              <Field
+                label="رقم القيد العشوائي / Issue No."
+                value={data.issueNo}
+                onChange={update("issueNo")}
+                dir="ltr"
+                readOnly
+              />
+              <AutoButton
+                label="توليد الأرقام"
+                onClick={updateSystemIdentifiers}
+              />
+            </div>
             <Field
-              label="رقم القيد / Issue No."
-              value={data.issueNo}
-              onChange={update("issueNo")}
+              label="الرقم المرجعي / Reference No."
+              value={data.referenceNo}
+              onChange={update("referenceNo")}
               dir="ltr"
             />
-            <div className="field-with-action">
-              <Field
-                label="الرقم المرجعي / Reference No."
-                value={data.referenceNo}
-                onChange={update("referenceNo")}
-                dir="ltr"
-              />
-              <AutoButton
-                label="توليد الأرقام"
-                onClick={updateSystemIdentifiers}
-              />
-            </div>
-            <div className="field-with-action">
-              <Field
-                label="رقم الإصدار / Issuance No."
-                value={data.issuanceNo}
-                onChange={update("issuanceNo")}
-                dir="ltr"
-                readOnly
-              />
-              <AutoButton
-                label="توليد الأرقام"
-                onClick={updateSystemIdentifiers}
-              />
-            </div>
-            <div className="field-with-action">
-              <Field
-                label="الرقم الداخلي / Internal No."
-                value={data.internalNo}
-                onChange={update("internalNo")}
-                dir="ltr"
-                readOnly
-              />
-              <AutoButton
-                label="توليد الأرقام"
-                onClick={updateSystemIdentifiers}
-              />
-            </div>
+            <Field
+              label="رقم الإصدار / Issuance No."
+              value={data.issuanceNo}
+              onChange={update("issuanceNo")}
+              dir="ltr"
+              readOnly
+            />
+            <Field
+              label="الرقم الداخلي / Internal No."
+              value={data.internalNo}
+              onChange={update("internalNo")}
+              dir="ltr"
+              readOnly
+            />
             <DateField
               label="تاريخ الإصدار / Issue Date"
               value={data.issueDate}
@@ -1894,11 +2071,11 @@ export default function Home() {
             />
             <div className="date-link-control">
               <div>
-                <strong>ربط سنة الإصدار والانتهاء</strong>
+                <strong>احتساب الانتهاء بعد 3 أشهر</strong>
                 <small>
                   {documentYearLinked
-                    ? "تتطابق السنة تلقائيًا مع إبقاء اليوم والشهر حسب الحقل"
-                    : "كل تاريخ مستقل ويمكن تعديل سنته منفردًا"}
+                    ? "يُحسب تاريخ الانتهاء تلقائيًا بعد 3 أشهر، ويمكن تعديله مباشرة"
+                    : "تاريخ الانتهاء يدوي؛ أعد الربط لإرجاع احتساب الثلاثة أشهر"}
                 </small>
               </div>
               <button
@@ -1912,7 +2089,7 @@ export default function Home() {
                 ) : (
                   <Unlink2 size={13} />
                 )}
-                {documentYearLinked ? "السنة مرتبطة" : "السنة مستقلة"}
+                {documentYearLinked ? "تلقائي: 3 أشهر" : "تعديل يدوي"}
               </button>
             </div>
           </div>
@@ -1976,7 +2153,7 @@ export default function Home() {
             <span>02</span>
             <div>
               <h3>بيانات صاحب الطلب</h3>
-              <p>تظهر في الجدول العربي والإنجليزي</p>
+              <p>عند الربط تُحوَّل الخانة المقابلة إلى اللغة الأخرى تلقائيًا</p>
             </div>
           </div>
           <div className="form-grid">
@@ -1990,8 +2167,7 @@ export default function Home() {
               }
               onChange={updateLinkedText(
                 "fullNameAr",
-                "fullNameEn",
-                linkedTextFields.fullName
+                "fullNameEn"
               )}
             />
             <TextPairField
@@ -2004,8 +2180,7 @@ export default function Home() {
               }
               onChange={updateLinkedText(
                 "surnameAr",
-                "surnameEn",
-                linkedTextFields.surname
+                "surnameEn"
               )}
             />
             <TextPairField
@@ -2018,8 +2193,7 @@ export default function Home() {
               }
               onChange={updateLinkedText(
                 "birthPlaceAr",
-                "birthPlaceEn",
-                linkedTextFields.birthPlace
+                "birthPlaceEn"
               )}
             />
             <DateField
@@ -2083,8 +2257,7 @@ export default function Home() {
               }
               onChange={updateLinkedText(
                 "occupationAr",
-                "occupationEn",
-                linkedTextFields.occupation
+                "occupationEn"
               )}
             />
             <TextPairField
@@ -2100,8 +2273,7 @@ export default function Home() {
               }
               onChange={updateLinkedText(
                 "idIssuePlaceAr",
-                "idIssuePlaceEn",
-                linkedTextFields.idIssuePlace
+                "idIssuePlaceEn"
               )}
             />
             <BilingualChoiceField
