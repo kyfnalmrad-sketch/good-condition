@@ -2600,9 +2600,9 @@
   z-index: 5;
   left: 3.1%;
   right: 3.1%;
-  bottom: 1.4%;
+  bottom: 0.7%;
   min-height: 10.5%;
-  border-top: 2px solid #111;
+  border-top: 0;
   padding-top: 1.2%;
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2611,6 +2611,14 @@
   color: #111;
   background: #fff;
   font-family: Arial, "Noto Sans Arabic", sans-serif;
+}
+.document .doc-lower-header::before {
+  content: "";
+  position: absolute;
+  top: 1mm;
+  left: 0;
+  right: 0;
+  border-top: 2px solid #111;
 }
 .document .doc-lower-left,
 .document .doc-lower-right {
@@ -2629,7 +2637,7 @@
   font-weight: 800;
 }
 .document .doc-lower-left b {
-  font-size: clamp(8px, 0.95vw, 11px);
+  font-size: clamp(9px, 1.05vw, 12px);
 }
 .document .doc-lower-left .doc-request-number {
   margin-top: 3px;
@@ -2656,7 +2664,7 @@
   line-height: 1.15;
 }
 .document .doc-lower-identity b {
-  font-size: clamp(9px, 1.1vw, 13px);
+  font-size: clamp(10px, 1.2vw, 14px);
 }
 .document .doc-lower-identity span {
   white-space: nowrap;
@@ -2680,12 +2688,13 @@
   gap: 8px;
 }
 .document .doc-lower-qr {
-  flex: 0 0 26mm;
-  width: 26mm;
-  height: 26mm;
+  flex: 0 0 24mm;
+  width: 24mm;
+  height: 24mm;
   display: grid;
   place-items: center;
   background: #fff;
+  transform: translateY(1mm);
 }
 .document .doc-lower-qr svg {
   display: block;
@@ -2750,13 +2759,15 @@
 }
 /* Final good-conduct layout: clear PDF417, raise notices, and fit signatures above the footer. */
 .document .doc-table {
-  top: -38mm;
+  top: -40mm;
 }
 .document .doc-statement {
-  top: -38mm;
+  top: -40mm;
+  width: 100%;
+  margin-left: 0;
 }
 .document .doc-notes {
-  bottom: 21.8%;
+  bottom: 22.5%;
 }
 .document .doc-signatures {
   left: 6%;
@@ -2808,6 +2819,9 @@
 .document .doc-photo-name {
   width: 36mm;
   max-width: 36mm;
+}
+.document .code-details-en {
+  font-size: 8px;
 }
 .document .qr-box > span {
   width: 37mm;
