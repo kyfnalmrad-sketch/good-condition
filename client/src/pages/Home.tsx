@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { MemoryInput } from "@/components/MemoryInput";
 import { toast } from "sonner";
 import { QRCodeSVG } from "qrcode.react";
 import { useLocation } from "wouter";
@@ -1147,6 +1148,7 @@ function TextPairField({
   linked,
   onToggle,
   translateOnLink = true,
+  memoryField,
   onChange,
 }: {
   label: string;
@@ -1155,6 +1157,7 @@ function TextPairField({
   linked: boolean;
   onToggle: () => void;
   translateOnLink?: boolean;
+  memoryField?: string;
   onChange: (side: "ar" | "en", value: string) => void;
 }) {
   const change = (side: "ar" | "en", value: string) => {
@@ -1184,7 +1187,11 @@ function TextPairField({
       <div className="date-pair-grid">
         <div className="field">
           <label>العربي</label>
-          <Input
+          <MemoryInput
+            moduleKey="good_conduct_certificates"
+            fieldKey={memoryField ? `${memoryField}Ar` : undefined}
+            labelAr={arabicValue}
+            labelEn={englishValue}
             dir="rtl"
             lang="ar"
             value={arabicValue}
@@ -1193,7 +1200,11 @@ function TextPairField({
         </div>
         <div className="field">
           <label>English</label>
-          <Input
+          <MemoryInput
+            moduleKey="good_conduct_certificates"
+            fieldKey={memoryField ? `${memoryField}En` : undefined}
+            labelAr={arabicValue}
+            labelEn={englishValue}
             dir="ltr"
             lang="en"
             value={englishValue}
@@ -1272,7 +1283,12 @@ function BilingualChoiceField({
         </button>
       </div>
       <div className="custom-nationality-grid">
-        <Input
+        <MemoryInput
+          moduleKey="good_conduct_certificates"
+          fieldKey={`${field}Ar`}
+          labelAr={arabicValue}
+          labelEn={englishValue}
+          localOptions={options.map(option => ({ value: option.ar, label: option.en }))}
           list={listId}
           dir="rtl"
           lang="ar"
@@ -1281,7 +1297,12 @@ function BilingualChoiceField({
           onChange={e => applyValue("ar", e.target.value)}
           placeholder="العربية أو اكتب قيمة حرة"
         />
-        <Input
+        <MemoryInput
+          moduleKey="good_conduct_certificates"
+          fieldKey={`${field}En`}
+          labelAr={arabicValue}
+          labelEn={englishValue}
+          localOptions={options.map(option => ({ value: option.en, label: option.ar }))}
           list={listId}
           dir="ltr"
           lang="en"
@@ -2205,6 +2226,7 @@ export default function Home() {
           <div className="form-grid">
             <TextPairField
               label="الاسم الكامل / Full Name"
+              memoryField="fullName"
               arabicValue={data.fullNameAr}
               englishValue={data.fullNameEn}
               linked={linkedTextFields.fullName}
@@ -2218,6 +2240,7 @@ export default function Home() {
             />
             <TextPairField
               label="اللقب / Surname"
+              memoryField="surname"
               arabicValue={data.surnameAr}
               englishValue={data.surnameEn}
               linked={linkedTextFields.surname}
@@ -2236,6 +2259,7 @@ export default function Home() {
             />
             <TextPairField
               label="مكان الميلاد / Birth Place"
+              memoryField="birthPlace"
               arabicValue={data.birthPlaceAr}
               englishValue={data.birthPlaceEn}
               linked={linkedTextFields.birthPlace}
@@ -2292,6 +2316,7 @@ export default function Home() {
             />
             <TextPairField
               label="المهنة / Occupation"
+              memoryField="occupation"
               arabicValue={data.occupationAr}
               englishValue={data.occupationEn}
               linked={linkedTextFields.occupation}
@@ -2305,6 +2330,7 @@ export default function Home() {
             />
             <TextPairField
               label="جهة الإصدار / Issuing Authority"
+              memoryField="idIssuePlace"
               arabicValue={data.idIssuePlaceAr}
               englishValue={data.idIssuePlaceEn}
               linked={linkedTextFields.idIssuePlace}
