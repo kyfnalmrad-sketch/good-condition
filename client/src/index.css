@@ -1013,6 +1013,12 @@
   font-size: clamp(11px, 1.45vw, 14px);
   font-weight: 900;
 }
+.doc-statement-en {
+  white-space: nowrap;
+  font-size: clamp(9px, 1.1vw, 12px);
+  line-height: 1.12;
+  direction: ltr;
+}
 .doc-notes {
   font-size: clamp(12px, 1.55vw, 15px);
   font-weight: 900;
@@ -1020,6 +1026,16 @@
 .doc-statement > div,
 .doc-notes p {
   font-weight: 900;
+}
+.photo-name-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.photo-name-heading > label {
+  margin: 0;
 }
 
 /* A4 export: prevent overflow from creating a trailing blank page. */

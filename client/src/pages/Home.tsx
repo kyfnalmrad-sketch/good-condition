@@ -674,8 +674,8 @@ const FORM_REVIEW_LABELS: Record<keyof FormState, string> = {
   birthDate: "تاريخ الميلاد / Birth Date",
   idTypeAr: "نوع الهوية",
   idTypeEn: "ID Type",
-  idNumberAr: "رقم الهوية",
-  idNumberEn: "ID Number",
+  idNumberAr: "رقم الجواز",
+  idNumberEn: "Passport No.",
   passportNoAr: "رقم الجواز",
   passportNoEn: "Passport Number",
   passportAr: "انتهاء الجواز",
@@ -957,8 +957,8 @@ const EXCEL_FIELD_GUIDE = [
   ["nationalityEn", "الجنسية بالإنجليزي", "Nationality (English)"],
   ["idTypeAr", "نوع الهوية", "ID Type"],
   ["idTypeEn", "نوع الهوية بالإنجليزي", "ID Type (English)"],
-  ["idNumberAr", "رقم الهوية", "ID Number"],
-  ["idNumberEn", "رقم الهوية بالإنجليزي", "ID Number (English)"],
+  ["idNumberAr", "رقم الجواز", "Passport No."],
+  ["idNumberEn", "رقم الجواز بالإنجليزي", "Passport No. (English)"],
   ["passportAr", "تاريخ انتهاء الجواز", "Passport Expiry"],
   ["passportEn", "تاريخ انتهاء الجواز بالإنجليزي", "Passport Expiry (English)"],
   ["occupationAr", "المهنة", "Occupation"],
@@ -1379,8 +1379,8 @@ export function DocumentPreview({
     ],
     [
       ["Card Type", data.idTypeEn],
-      ["ID Card", data.idNumberEn],
-      ["رقم الهوية", toArabicDigits(data.idNumberAr)],
+      ["Passport No.", data.idNumberEn],
+      ["رقم الجواز", toArabicDigits(data.idNumberAr)],
       ["نوع الهوية", data.idTypeAr],
     ],
     [
@@ -1497,7 +1497,17 @@ export function DocumentPreview({
           ))}
         </div>
         <div className="doc-statement">
-          <div>{data.notesEn}</div>
+          <div className="doc-statement-en">
+            {data.notesEn === initial.notesEn ? (
+              <>
+                RECORDS HAVE BEEN VERIFIED AND NO CRIMINAL
+                <br />
+                RECORDS HAVE BEEN FOUND AGAINST THE AFOREMENTIONED
+              </>
+            ) : (
+              data.notesEn
+            )}
+          </div>
           <div dir="rtl">{data.notesAr}</div>
         </div>
         <div className="doc-notes">
@@ -1513,7 +1523,7 @@ export function DocumentPreview({
             </p>
           </div>
           <div className="doc-expiry doc-expiry-en">
-            <p>Date of expired {formatDate(data.expiryEn)}</p>
+            <p>Date of Expiry {formatDate(data.expiryEn)}</p>
           </div>
           <div className="doc-expiry doc-expiry-ar" dir="rtl">
             <p>تاريخ الانتهاء {formatDate(data.expiryAr)}</p>
@@ -1567,6 +1577,7 @@ export default function Home() {
   const [photo, setPhoto] = useState(defaultPhoto);
   const [originalPhoto, setOriginalPhoto] = useState(defaultPhoto);
   const [photoName, setPhotoName] = useState(initial.fullNameEn);
+  const [photoNameLinked, setPhotoNameLinked] = useState(true);
   const [watermarkPhoto, setWatermarkPhoto] = useState(defaultWatermarkPhoto);
   const [linkedWatermarkPhoto, setLinkedWatermarkPhoto] =
     useState(defaultWatermarkPhoto);
@@ -1610,6 +1621,7 @@ export default function Home() {
       const saved = localStorage.getItem("good-conduct-form-data");
       const savedPhoto = localStorage.getItem("good-conduct-form-photo");
       const savedPhotoName = localStorage.getItem(savedPhotoNameKey);
+      const savedPhotoNameLinked = localStorage.getItem("good-conduct-photo-name-linked");
       const savedWatermarkPhoto = localStorage.getItem(
         "good-conduct-watermark-photo"
       );
@@ -1647,7 +1659,9 @@ export default function Home() {
               }
             : restoredData
         );
-        setPhotoName(savedPhotoName || restoredData.fullNameEn);
+        const restoredPhotoNameLinked = savedPhotoNameLinked !== "false";
+        setPhotoNameLinked(restoredPhotoNameLinked);
+        setPhotoName(restoredPhotoNameLinked ? restoredData.fullNameEn : savedPhotoName || restoredData.fullNameEn);
       }
       if (savedPhoto) {
         setPhoto(savedPhoto);
@@ -1685,6 +1699,7 @@ export default function Home() {
         localStorage.setItem("good-conduct-form-data", JSON.stringify(data));
         localStorage.setItem("good-conduct-form-photo", photo);
         localStorage.setItem(savedPhotoNameKey, photoName);
+        localStorage.setItem("good-conduct-photo-name-linked", String(photoNameLinked));
         localStorage.setItem("good-conduct-watermark-photo", watermarkPhoto);
         localStorage.setItem(linkedWatermarkPhotoKey, linkedWatermarkPhoto);
         localStorage.setItem(watermarkLinkedKey, String(watermarkLinked));
@@ -1694,7 +1709,7 @@ export default function Home() {
       }
     }, 450);
     return () => window.clearTimeout(timer);
-  }, [data, photo, photoName, watermarkPhoto, linkedWatermarkPhoto, watermarkLinked]);
+  }, [data, photo, photoName, photoNameLinked, watermarkPhoto, linkedWatermarkPhoto, watermarkLinked]);
   useEffect(() => {
     localStorage.setItem(
       "good-conduct-remove-photo-background",
@@ -1792,6 +1807,7 @@ export default function Home() {
         };
       }
       setData(next);
+      if (photoNameLinked) setPhotoName(next.fullNameEn);
       setGenerated(false);
       toast.success(
         `تم استيراد بيانات الصف الأول إلى الخانات${rows.length > 1 ? "، وتم تجاهل الصفوف اللاحقة" : ""}`
@@ -1814,6 +1830,11 @@ export default function Home() {
         ({ ...d, [side === "ar" ? arKey : enKey]: value })
       );
     };
+  const updateFullName = (side: "ar" | "en", value: string) => {
+    updateLinkedText("fullNameAr", "fullNameEn")(side, value);
+    if (photoNameLinked)
+      setPhotoName(side === "en" ? value : translateBilingualText(value, "en"));
+  };
   const toggleIdNumberLink = () => {
     setIdNumberLinked(linked => {
       const nextLinked = !linked;
@@ -2233,10 +2254,7 @@ export default function Home() {
               onToggle={() =>
                 setLinkedTextFields(d => ({ ...d, fullName: !d.fullName }))
               }
-              onChange={updateLinkedText(
-                "fullNameAr",
-                "fullNameEn"
-              )}
+              onChange={updateFullName}
             />
             <TextPairField
               label="اللقب / Surname"
@@ -2307,7 +2325,7 @@ export default function Home() {
               </select>
             </div>
             <TextPairField
-              label="رقم الهوية / ID Card"
+              label="رقم الجواز / Passport No."
               arabicValue={data.idNumberAr}
               englishValue={data.idNumberEn}
               linked={idNumberLinked}
@@ -2403,11 +2421,24 @@ export default function Home() {
             />
           </label>
           <div className="photo-name-editor">
-            <Field
-              label="الاسم أسفل الصورة / Photo name"
+            <div className="photo-name-heading">
+              <Label>الاسم أسفل الصورة / Photo name</Label>
+              <button
+                type="button"
+                className={`link-toggle${photoNameLinked ? " active" : ""}`}
+                onClick={() => setPhotoNameLinked(linked => !linked)}
+                aria-pressed={photoNameLinked}
+              >
+                {photoNameLinked ? <Link2 size={13} /> : <Unlink2 size={13} />}
+                {photoNameLinked ? "مرتبط بالاسم" : "مستقل"}
+              </button>
+            </div>
+            <Input
               value={photoName}
-              onChange={setPhotoName}
+              onChange={e => setPhotoName(e.target.value)}
+              onBlur={e => setPhotoName(e.currentTarget.value.trim())}
               dir="ltr"
+              aria-label="الاسم أسفل الصورة"
             />
           </div>
           <label className="upload-zone watermark-upload-zone">
