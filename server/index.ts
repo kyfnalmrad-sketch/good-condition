@@ -3,6 +3,7 @@ import { createServer } from "http";
 import crypto from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { listGoodMemoryValues, rememberGoodMemoryValue } from "./memory";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -208,6 +209,37 @@ async function startServer() {
   app.post("/api/logout", (_req, res) => {
     clearSessionCookie(res);
     res.json({ authenticated: false });
+  });
+
+  app.get("/api/memory", redirectToLogin, async (req, res) => {
+    const moduleKey = typeof req.query.moduleKey === "string" ? req.query.moduleKey : "";
+    const fieldKey = typeof req.query.fieldKey === "string" ? req.query.fieldKey : undefined;
+    const parsedLimit = Number(req.query.limit ?? 120);
+    if (!moduleKey || moduleKey.length > 80 || (fieldKey && fieldKey.length > 80) || !Number.isInteger(parsedLimit)) {
+      res.status(400).json({ message: "بيانات طلب الذاكرة غير صالحة" });
+      return;
+    }
+    const result = await listGoodMemoryValues(moduleKey, fieldKey, Math.min(Math.max(parsedLimit, 1), 200));
+    res.json({ values: result.data, source: result.source });
+  });
+
+  app.post("/api/memory", redirectToLogin, async (req, res) => {
+    const body = req.body as Record<string, unknown>;
+    const moduleKey = typeof body.moduleKey === "string" ? body.moduleKey : "";
+    const fieldKey = typeof body.fieldKey === "string" ? body.fieldKey : "";
+    const value = typeof body.value === "string" ? body.value : "";
+    if (!moduleKey || moduleKey.length > 80 || !fieldKey || fieldKey.length > 80 || value.length > 500) {
+      res.status(400).json({ message: "بيانات الذاكرة غير صالحة" });
+      return;
+    }
+    const result = await rememberGoodMemoryValue({
+      moduleKey,
+      fieldKey,
+      value,
+      labelAr: typeof body.labelAr === "string" ? body.labelAr.slice(0, 500) : undefined,
+      labelEn: typeof body.labelEn === "string" ? body.labelEn.slice(0, 500) : undefined,
+    });
+    res.json({ value: result.data, source: result.source });
   });
 
   app.use(express.static(staticPath));
